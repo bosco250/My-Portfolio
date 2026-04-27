@@ -691,7 +691,7 @@ body {
   overflow: hidden;
   position: relative;
   /* Fill remaining height after the chrome bar (~44px) */
-  height: calc(min(88vh, 780px) - 44px);
+  height: calc(70vh - 44px);
   min-height: 360px;
   display: flex;
   align-items: center;
@@ -762,11 +762,4 @@ body {
   .browser-modal-window { width: 100% !important; border-radius: 8px; }
   .mobile-frame-outer   { width: 280px; }
   .browser-urlbar       { display: none; }
-}
-
-/* ── Browser progress bar animation ─────────────────────────── */
-@keyframes browser-progress {
-  0%   { width: 0%;   margin-left: 0; }
-  50%  { width: 60%;  margin-left: 20%; }
-  100% { width: 0%;   margin-left: 100%; }
 }
