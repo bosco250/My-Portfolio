@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
-import { ExternalLink, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react'
+import { ExternalLink, ArrowRight, ChevronDown, ChevronUp, Monitor } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
+import BrowserPreviewModal, { NoPreviewModal } from './BrowserPreviewModal'
 
 const GithubIcon = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -15,7 +16,7 @@ const statusConfig = {
   archived:      { label: 'Archived',    color: '#606078', bg: 'rgba(96,96,120,0.1)' },
 }
 
-// Animated code rain canvas for project image area
+// ── Code rain canvas ──────────────────────────────────────────
 function CodeCanvas({ hovered }: { hovered: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const rafRef    = useRef<number>(0)
@@ -30,22 +31,20 @@ function CodeCanvas({ hovered }: { hovered: boolean }) {
     canvas.height = canvas.offsetHeight
 
     const snippets = ['const', '=>', 'async', 'await', 'return', '{}', '[]', 'fn()', '.map', '.then', 'type', 'interface']
-    const cols = Math.floor(canvas.width / 48)
+    const cols  = Math.floor(canvas.width / 48)
     const drops = Array.from({ length: cols }, () => Math.random() * -20)
 
     const draw = () => {
       ctx.fillStyle = 'rgba(10,10,15,0.18)'
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-
       ctx.font = '11px JetBrains Mono, monospace'
       drops.forEach((y, i) => {
-        const text = snippets[Math.floor(Math.random() * snippets.length)]
+        const text  = snippets[Math.floor(Math.random() * snippets.length)]
         const alpha = hovered ? 0.18 : 0.07
         ctx.fillStyle = `rgba(0,200,150,${alpha})`
         ctx.fillText(text, i * 48, y * 14)
         drops[i] = y > canvas.height / 14 + 5 ? 0 : y + 0.4
       })
-
       rafRef.current = requestAnimationFrame(draw)
     }
 
@@ -57,14 +56,18 @@ function CodeCanvas({ hovered }: { hovered: boolean }) {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: hovered ? 1 : 0.6, transition: 'opacity 0.4s' }}
+      style={{
+        position: 'absolute', inset: 0, width: '100%', height: '100%',
+        opacity: hovered ? 1 : 0.6,
+        transition: 'opacity 0.4s',
+      }}
     />
   )
 }
 
-// Animated metric value
+// ── Animated metric value ─────────────────────────────────────
 function MetricValue({ value }: { value: string }) {
-  const num = parseInt(value.replace(/\D/g, ''), 10)
+  const num    = parseInt(value.replace(/\D/g, ''), 10)
   const suffix = value.replace(/[\d]/g, '')
   const [display, setDisplay] = useState(0)
   const started = useRef(false)
@@ -76,7 +79,7 @@ function MetricValue({ value }: { value: string }) {
     const duration = 1000
     const start = performance.now()
     const tick = (now: number) => {
-      const p = Math.min((now - start) / duration, 1)
+      const p     = Math.min((now - start) / duration, 1)
       const eased = 1 - Math.pow(1 - p, 3)
       setDisplay(Math.round(eased * num))
       if (p < 1) requestAnimationFrame(tick)
@@ -85,194 +88,231 @@ function MetricValue({ value }: { value: string }) {
   }, [visible, num])
 
   return (
-    <div
-      ref={ref}
-      style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-accent)' }}
-    >
+    <div ref={ref} style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-accent)' }}>
       {isNaN(num) ? value : `${display}${suffix}`}
     </div>
   )
 }
 
+// ── Project card ──────────────────────────────────────────────
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
-  const [expanded, setExpanded] = useState(false)
-  const [hovered,  setHovered]  = useState(false)
+  const [expanded,    setExpanded]    = useState(false)
+  const [hovered,     setHovered]     = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
   const { ref, visible } = useReveal()
   const status = statusConfig[project.status]
 
   return (
-    <article
-      ref={ref}
-      className={`reveal glow-card project-card ${visible ? 'visible' : ''}`}
-      style={{
-        background: 'var(--color-bg-elevated)',
-        border: `1px solid ${hovered ? 'var(--color-accent)' : 'var(--color-border)'}`,
-        borderRadius: 'var(--radius-xl)',
-        overflow: 'hidden',
-        transitionDelay: `${index * 80}ms`,
-        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 12px 48px rgba(0,200,150,0.1)' : 'none',
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
-      {/* Image area with code rain */}
-      <div
-        className="project-img-area"
-        style={{ height: '200px', position: 'relative', overflow: 'hidden' }}
+    <>
+      <article
+        ref={ref}
+        className={`reveal glow-card project-card ${visible ? 'visible' : ''}`}
+        style={{
+          background: 'var(--color-bg-elevated)',
+          border: `1px solid ${hovered ? 'var(--color-accent)' : 'var(--color-border)'}`,
+          borderRadius: 'var(--radius-xl)',
+          overflow: 'hidden',
+          transitionDelay: `${index * 80}ms`,
+          transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
+          boxShadow: hovered ? '0 12px 48px rgba(0,200,150,0.1)' : 'none',
+        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <CodeCanvas hovered={hovered} />
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            fontFamily: 'var(--font-mono)',
-            fontSize: '2.5rem',
-            color: 'var(--color-accent)',
-            opacity: hovered ? 0.3 : 0.12,
-            userSelect: 'none',
-            transition: 'opacity 0.3s',
-          }}
-          aria-hidden="true"
-        >
-          {'{ }'}
-        </div>
-
-        {/* Badges */}
-        <div style={{ position: 'absolute', top: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
-          <span className="section-label" style={{ fontSize: '0.6rem' }}>{project.category}</span>
-          <span style={{
-            fontSize: '0.6rem',
-            fontFamily: 'var(--font-mono)',
-            fontWeight: 500,
-            color: status.color,
-            background: status.bg,
-            padding: '2px 9px',
-            borderRadius: 'var(--radius-full)',
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
-          }}>
-            {status.label}
-          </span>
-        </div>
-      </div>
-
-      <div style={{ padding: '1.5rem' }}>
-        <h3 style={{
-          fontFamily: 'var(--font-display)',
-          fontSize: 'var(--text-xl)',
-          fontWeight: 700,
-          color: 'var(--color-text-primary)',
-          marginBottom: '0.5rem',
-          lineHeight: 1.3,
-          transition: 'color 0.2s',
-        }}>
-          {project.title}
-        </h3>
-        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
-          {project.tagline}
-        </p>
-
-        {/* Tech stack */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '1.25rem' }}>
-          {project.tech.slice(0, 4).map((t) => (
-            <span key={t} className="tech-badge">{t}</span>
-          ))}
-          {project.tech.length > 4 && (
-            <span className="tech-badge" style={{ color: 'var(--color-text-muted)' }}>+{project.tech.length - 4}</span>
-          )}
-        </div>
-
-        {/* Expand toggle */}
-        <button
-          onClick={() => setExpanded(!expanded)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: 'none',
-            border: 'none',
-            color: 'var(--color-accent)',
-            fontFamily: 'var(--font-body)',
-            fontSize: 'var(--text-sm)',
-            fontWeight: 500,
-            cursor: 'pointer',
-            padding: '2px 0',
-            marginBottom: expanded ? '1rem' : 0,
-            transition: 'opacity 0.2s, gap 0.2s',
-          }}
-          aria-expanded={expanded}
-          onMouseEnter={(e) => { e.currentTarget.style.gap = '10px' }}
-          onMouseLeave={(e) => { e.currentTarget.style.gap = '6px' }}
-        >
-          {expanded ? 'Hide details' : 'View case study'}
-          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-        </button>
-
-        {/* Expandable case study */}
-        {expanded && (
-          <div className="expand-enter" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Problem</div>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.problem}</p>
-            </div>
-            <div>
-              <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Solution</div>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.solution}</p>
-            </div>
-            <div>
-              <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Key Challenge</div>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-                <strong style={{ color: 'var(--color-text-primary)' }}>{project.challenges[0].problem}:</strong>{' '}
-                {project.challenges[0].solution}
-              </p>
-            </div>
-
-            {/* Metrics with count-up */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              {project.metrics.map((m) => (
-                <div key={m.label} className="metric-card">
-                  <MetricValue value={m.value} />
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>{m.label}</div>
-                </div>
-              ))}
-            </div>
-
-            <blockquote style={{
-              borderLeft: '2px solid var(--color-border)',
-              paddingLeft: '12px',
-              fontSize: 'var(--text-sm)',
-              color: 'var(--color-text-muted)',
-              fontStyle: 'italic',
-              lineHeight: 1.65,
-              transition: 'border-color 0.2s',
+        {/* Image area */}
+        <div className="project-img-area" style={{ height: '200px', position: 'relative', overflow: 'hidden' }}>
+          <CodeCanvas hovered={hovered} />
+          <div
+            style={{
+              position: 'relative', zIndex: 1,
+              fontFamily: 'var(--font-mono)', fontSize: '2.5rem',
+              color: 'var(--color-accent)',
+              opacity: hovered ? 0.3 : 0.12,
+              userSelect: 'none', transition: 'opacity 0.3s',
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
-            >
-              "{project.reflection}"
-            </blockquote>
-          </div>
-        )}
+            aria-hidden="true"
+          >{'{ }'}</div>
 
-        {/* Action links */}
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)' }}>
-          {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}>
-              Live Demo <ExternalLink size={13} />
-            </a>
-          )}
-          {project.githubUrl && (
-            <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}>
-              <GithubIcon size={14} /> Code
-            </a>
-          )}
+          {/* Badges */}
+          <div style={{ position: 'absolute', top: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
+            <span className="section-label" style={{ fontSize: '0.6rem' }}>{project.category}</span>
+            <span style={{
+              fontSize: '0.6rem', fontFamily: 'var(--font-mono)', fontWeight: 500,
+              color: status.color, background: status.bg,
+              padding: '2px 9px', borderRadius: 'var(--radius-full)',
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+            }}>{status.label}</span>
+          </div>
+
+          {/* Preview hover overlay */}
+          <div
+            onClick={() => setPreviewOpen(true)}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 3,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(0,0,0,0.55)',
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 0.25s',
+              cursor: 'pointer',
+              backdropFilter: 'blur(2px)',
+            }}
+            role="button"
+            aria-label={`Preview ${project.title}`}
+          >
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              background: 'rgba(0,200,150,0.15)',
+              border: '1px solid rgba(0,200,150,0.4)',
+              borderRadius: 'var(--radius-full)',
+              padding: '8px 18px',
+              color: 'var(--color-accent)',
+              fontFamily: 'var(--font-body)',
+              fontWeight: 600,
+              fontSize: 'var(--text-sm)',
+              backdropFilter: 'blur(8px)',
+              transition: 'background 0.2s, transform 0.2s',
+            }}>
+              <Monitor size={15} />
+              Preview
+            </div>
+          </div>
         </div>
-      </div>
-    </article>
+
+        <div style={{ padding: '1.5rem' }}>
+          <h3 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 700,
+            color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.3,
+          }}>{project.title}</h3>
+
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
+            {project.tagline}
+          </p>
+
+          {/* Tech stack */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '1.25rem' }}>
+            {project.tech.slice(0, 4).map((t) => (
+              <span key={t} className="tech-badge">{t}</span>
+            ))}
+            {project.tech.length > 4 && (
+              <span className="tech-badge" style={{ color: 'var(--color-text-muted)' }}>+{project.tech.length - 4}</span>
+            )}
+          </div>
+
+          {/* Expand toggle */}
+          <button
+            onClick={() => setExpanded(!expanded)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              background: 'none', border: 'none',
+              color: 'var(--color-accent)', fontFamily: 'var(--font-body)',
+              fontSize: 'var(--text-sm)', fontWeight: 500, cursor: 'pointer',
+              padding: '2px 0', marginBottom: expanded ? '1rem' : 0,
+              transition: 'gap 0.2s',
+            }}
+            aria-expanded={expanded}
+            onMouseEnter={(e) => { e.currentTarget.style.gap = '10px' }}
+            onMouseLeave={(e) => { e.currentTarget.style.gap = '6px' }}
+          >
+            {expanded ? 'Hide details' : 'View case study'}
+            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+
+          {/* Case study */}
+          {expanded && (
+            <div className="expand-enter" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Problem</div>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.problem}</p>
+              </div>
+              <div>
+                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Solution</div>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.solution}</p>
+              </div>
+              <div>
+                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Key Challenge</div>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
+                  <strong style={{ color: 'var(--color-text-primary)' }}>{project.challenges[0].problem}:</strong>{' '}
+                  {project.challenges[0].solution}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                {project.metrics.map((m) => (
+                  <div key={m.label} className="metric-card">
+                    <MetricValue value={m.value} />
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>{m.label}</div>
+                  </div>
+                ))}
+              </div>
+              <blockquote
+                style={{ borderLeft: '2px solid var(--color-border)', paddingLeft: '12px', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.65, transition: 'border-color 0.2s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
+              >
+                "{project.reflection}"
+              </blockquote>
+            </div>
+          )}
+
+          {/* Action row */}
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)', flexWrap: 'wrap' }}>
+            {/* Preview button — always shown */}
+            <button
+              onClick={() => setPreviewOpen(true)}
+              className="btn btn-primary"
+              style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
+            >
+              <Monitor size={13} />
+              Preview
+            </button>
+
+            {/* External link — only when live */}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+                style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
+              >
+                <ExternalLink size={13} />
+                Open site
+              </a>
+            )}
+
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-ghost"
+                style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
+              >
+                <GithubIcon size={14} /> Code
+              </a>
+            )}
+          </div>
+        </div>
+      </article>
+
+      {/* Modal */}
+      {previewOpen && (
+        project.liveUrl
+          ? <BrowserPreviewModal
+              url={project.liveUrl}
+              title={project.title}
+              onClose={() => setPreviewOpen(false)}
+            />
+          : <NoPreviewModal
+              title={project.title}
+              reason="This project is deployed in a private environment and isn't publicly accessible yet. The case study above covers the architecture, decisions, and outcomes in detail."
+              onClose={() => setPreviewOpen(false)}
+            />
+      )}
+    </>
   )
 }
 
+// ── Section ───────────────────────────────────────────────────
 export default function Projects() {
   const { ref: headRef, visible: headVisible } = useReveal()
 
@@ -284,7 +324,7 @@ export default function Projects() {
           Things I've built
         </h2>
         <p style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-secondary)', maxWidth: '520px', lineHeight: 1.6 }}>
-          Each project is a case study — click to see the problem, decisions, and what I'd do differently.
+          Each project is a case study — hover the card to preview, or expand for the full breakdown.
         </p>
       </div>
 
