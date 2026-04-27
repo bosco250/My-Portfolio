@@ -356,7 +356,7 @@ export function NoPreviewModal({ title, reason, onClose }: {
       aria-modal="true"
       aria-label={`Preview: ${title}`}
     >
-      <div className="browser-modal-window" style={{ width: 'min(620px, 92vw)' }}>
+      <div className="browser-modal-window" style={{ width: 'min(1060px, 94vw)' }}>
         <div className="browser-chrome">
           <div className="browser-traffic-lights">
             <button className="traffic-light tl-red" onClick={onClose} aria-label="Close" />

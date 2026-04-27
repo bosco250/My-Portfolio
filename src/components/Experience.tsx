@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { experience } from '../data/portfolio'
+import { experience, achievement } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
 
 export default function Experience() {
@@ -27,6 +27,7 @@ export default function Experience() {
           {experience.map((job, i) => (
             <ExperienceCard key={i} job={job} index={i} />
           ))}
+          <AchievementCard />
         </div>
       </div>
     </section>
@@ -93,6 +94,105 @@ function ExperienceCard({ job, index }: { job: typeof experience[0]; index: numb
                 color: 'var(--color-text-secondary)',
                 lineHeight: 1.5,
                 transition: 'color 0.2s, transform 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-primary)'
+                e.currentTarget.style.transform = 'translateX(3px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--color-text-secondary)'
+                e.currentTarget.style.transform = 'translateX(0)'
+              }}
+            >
+              <span style={{ color: 'var(--color-accent)', flexShrink: 0, marginTop: '2px' }}>▸</span>
+              {h}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function AchievementCard() {
+  const { ref, visible } = useReveal()
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      ref={ref}
+      className={`reveal glow-card ${visible ? 'visible' : ''}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'rgba(0,200,150,0.06)' : 'var(--color-accent-muted)',
+        border: `1px solid ${hovered ? 'var(--color-accent)' : 'rgba(0,200,150,0.25)'}`,
+        borderRadius: 'var(--radius-xl)',
+        padding: '1.75rem',
+        transitionDelay: '160ms',
+        position: 'relative',
+        overflow: 'hidden',
+        transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+        boxShadow: hovered ? '0 10px 36px rgba(0,200,150,0.12)' : 'none',
+      }}
+    >
+      {/* Accent line */}
+      <div
+        className="exp-accent"
+        style={{ height: hovered ? '100%' : '0%', background: 'linear-gradient(to bottom, #FFD700, transparent)' }}
+        aria-hidden="true"
+      />
+
+      <div style={{ paddingLeft: '0.75rem' }}>
+        {/* Trophy + date */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '1.25rem' }} aria-hidden="true">🏆</span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+              color: '#FFD700',
+              fontWeight: 600,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}>
+              1st Place
+            </span>
+          </div>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', whiteSpace: 'nowrap' }}>
+            2024
+          </span>
+        </div>
+
+        {/* Title */}
+        <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 'var(--text-lg)', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.25rem' }}>
+          Hanga Pitch Hackathon
+        </h3>
+
+        {/* Org */}
+        <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-accent)', fontWeight: 500, marginBottom: '0.75rem' }}>
+          RISA & ICT Chamber Rwanda
+          <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}> · National competition</span>
+        </div>
+
+        {/* Description */}
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65, marginBottom: '1rem' }}>
+          {achievement.description}
+        </p>
+
+        {/* Highlights */}
+        <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {[
+            'Competed against 200+ teams nationwide',
+            'Built and shipped a working civic tech product in 48 hours',
+            'Invited to present at Rwanda ICT Week 2024',
+          ].map((h) => (
+            <li
+              key={h}
+              style={{
+                display: 'flex', alignItems: 'flex-start', gap: '8px',
+                fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)',
+                lineHeight: 1.5, transition: 'color 0.2s, transform 0.2s',
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = 'var(--color-text-primary)'

@@ -561,7 +561,9 @@ body {
     0 40px 100px rgba(0,0,0,0.7),
     0 0 0 0.5px rgba(0,0,0,0.5);
   animation: scaleIn 0.25s var(--ease-spring) both;
-  max-height: 90vh;
+  /* Give the window a fixed height so the viewport can fill it */
+  height: 70vh;
+  max-height: 70vh;
 }
 
 /* ── Chrome bar ─────────────────────────────────────────────── */
@@ -686,13 +688,11 @@ body {
 
 /* ── Viewport ───────────────────────────────────────────────── */
 .browser-viewport {
-  flex: 1;
+  flex: 1;           /* fills all remaining height inside the window */
+  min-height: 0;     /* critical — lets flex children shrink below content size */
   background: #1a1a1a;
   overflow: hidden;
   position: relative;
-  /* Fill remaining height after the chrome bar (~44px) */
-  height: calc(70vh - 44px);
-  min-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
