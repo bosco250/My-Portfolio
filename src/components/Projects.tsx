@@ -300,6 +300,7 @@ function ProjectCard({ project, index }: { project: typeof projects[0]; index: n
           ? <BrowserPreviewModal
               url={project.liveUrl}
               title={project.title}
+              screenshot={project.screenshot}
               onClose={() => setPreviewOpen(false)}
             />
           : <NoPreviewModal
