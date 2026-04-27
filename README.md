@@ -1,132 +1,134 @@
-# React + TypeScript + Vite
+# Jean Bosco Dusengimana — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Personal portfolio built with React, TypeScript, and Tailwind CSS. Showcases production projects, experience, and technical skills.
 
-Currently, two official plugins are available:
+**Live:** [bosco250.github.io/My-Portfolio](https://bosco250.github.io/My-Portfolio) · **Repo:** [github.com/bosco250/My-Portfolio](https://github.com/bosco250/My-Portfolio)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Layer | Tech |
+|---|---|
+| Framework | React 19 + TypeScript |
+| Styling | Tailwind CSS v4 + CSS custom properties |
+| Build | Vite 8 |
+| Icons | Lucide React |
+| Fonts | Playfair Display · DM Sans · JetBrains Mono |
+| Deploy | Vercel / any static host |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Features
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Scroll progress bar** — thin green gradient bar at the top of the viewport
+- **Mouse parallax** — hero glow blobs follow the cursor at different depths
+- **Glow cards** — radial gradient follows the mouse inside each card
+- **Scroll reveal** — elements fade up as they enter the viewport, staggered per section
+- **Code rain** — animated canvas in project image areas, intensifies on hover
+- **Metric count-up** — numbers animate from 0 when scrolled into view
+- **Terminal easter egg** — type `bosco` anywhere on the page to open an interactive terminal
+- **Responsive navbar** — active section tracking, animated underline, mobile overlay
+- **Contact form** — honeypot spam protection, loading spinner, success state
+- **Accessible** — skip link, visible focus rings, `prefers-reduced-motion` support, semantic HTML
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Projects
+
+### Uruti Saluni
+Multi-platform salon management system built for Rwanda's beauty industry.
+- **Backend:** NestJS REST API — 15+ modules (auth, POS, inventory, accounting, micro-lending, wallets, Airtel mobile money)
+- **Web:** Next.js admin panel
+- **Mobile:** React Native app for salon owners and employees
+- **Stack:** NestJS · Next.js · React Native · TypeScript · PostgreSQL · TypeORM · JWT · Airtel Open API
+
+### IntelliProcure
+Multi-tenant procurement and tender management SaaS for East African enterprises.
+- AI-driven vendor-tender matching engine
+- 9-phase RBAC system with 5 permission models and tenant-scoped isolation
+- Full tender lifecycle: creation → evaluation → contract award
+- **Stack:** Next.js 14 · NestJS · TypeScript · PostgreSQL · Prisma · Docker · AWS
+
+### Break Through International
+Marketing website and admin CMS for a global executive coaching firm (7 countries).
+- React SPA with custom media management admin panel
+- Containerized with Docker, served behind Nginx on a bare VPS
+- Sub-200KB bundle, zero downtime since deployment
+- **Live:** [hyppopeace.com](https://hyppopeace.com)
+- **Stack:** React · Vite · React Router · Docker · Nginx
+
+---
+
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Production build
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Project Structure
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
-# 🚀 Jean Bosco Dusengimana — Portfolio Blueprint
-### Global-Level Portfolio System · Implementation-Ready Specification
+src/
+├── components/
+│   ├── Navbar.tsx       # Sticky nav with active section tracking
+│   ├── Hero.tsx         # Mouse parallax, canvas grid, animated CTAs
+│   ├── Projects.tsx     # Case study cards with code rain + count-up metrics
+│   ├── About.tsx        # Bio, working style, certifications
+│   ├── Skills.tsx       # Skill groups with glow hover
+│   ├── Experience.tsx   # Timeline cards with animated accent line
+│   ├── Contact.tsx      # Form with honeypot + social links
+│   ├── Footer.tsx
+│   └── Terminal.tsx     # Easter egg terminal (type "bosco")
+├── data/
+│   └── portfolio.ts     # All content lives here — edit this to update the site
+├── hooks/
+│   ├── useReveal.ts     # IntersectionObserver scroll reveal
+│   ├── useMousePosition.ts
+│   └── useCountUp.ts    # Animated number count-up
+├── index.css            # Design tokens, animations, component classes
+└── App.tsx              # Scroll progress bar, mouse glow wiring, terminal trigger
+```
 
-> **Author:** Dusengimana Jean Bosco  
-> **Role:** Full-Stack Software Developer  
-> **Location:** Kigali, Rwanda  
-> **GitHub:** [github.com/bosco250](https://github.com/bosco250)  
-> **Contact:** dusengimana06@gmail.com | +250 786 946 188
-
----
-
-## 📁 Blueprint Document Index
-
-| # | File | What It Covers |
-|---|------|---------------|
-| 01 | [`01-GOAL-AND-STRATEGY.md`](./01-GOAL-AND-STRATEGY.md) | Purpose, audience, positioning, what makes a portfolio exceptional |
-| 02 | [`02-INFORMATION-ARCHITECTURE.md`](./02-INFORMATION-ARCHITECTURE.md) | Sitemap, routes, navigation flow, page content strategy |
-| 03 | [`03-FEATURES.md`](./03-FEATURES.md) | Must-have, advanced, wow-factor, CMS/admin features |
-| 04 | [`04-UI-UX-DESIGN-SYSTEM.md`](./04-UI-UX-DESIGN-SYSTEM.md) | Design principles, typography, colors, components, accessibility |
-| 05 | [`05-TECHNICAL-ARCHITECTURE.md`](./05-TECHNICAL-ARCHITECTURE.md) | Next.js structure, state management, API, DB schema, deployment |
-| 06 | [`06-PERFORMANCE-AND-SEO.md`](./06-PERFORMANCE-AND-SEO.md) | Lighthouse 100 strategy, SEO, Core Web Vitals, schema markup |
-| 07 | [`07-PROJECT-SHOWCASE-STRATEGY.md`](./07-PROJECT-SHOWCASE-STRATEGY.md) | How to present projects at senior level, templates, case studies |
-| 08 | [`08-PERSONAL-BRANDING.md`](./08-PERSONAL-BRANDING.md) | Positioning, tone, memorability, storytelling framework |
-| 09 | [`09-SECURITY-AND-BEST-PRACTICES.md`](./09-SECURITY-AND-BEST-PRACTICES.md) | Secure coding, API protection, common pitfalls |
-| 10 | [`10-IMPLEMENTATION-ROADMAP.md`](./10-IMPLEMENTATION-ROADMAP.md) | Step-by-step build plan, phases, time estimates |
-| 11 | [`11-UNIQUE-AND-WOW-IDEAS.md`](./11-UNIQUE-AND-WOW-IDEAS.md) | Rare features that impress senior engineers |
-| 12 | [`12-CONTENT-DATA.md`](./12-CONTENT-DATA.md) | Real content from CV, project writeups, bio copy |
-| 13 | [`13-CMS-SCHEMA.md`](./13-CMS-SCHEMA.md) | Dynamic content schema for projects, blog, testimonials |
+> **To update content:** edit `src/data/portfolio.ts` — personal info, projects, skills, and experience are all in one place.
 
 ---
 
-## ⚡ Quick Summary
+## Deployment
 
-**Stack Decision:** vite + TypeScript + Tailwind CSS + Sanity CMS + Vercel  
-**Design Direction:** Dark, editorial, cinematic — Africa's tech story told with global craft  
-**Unique Angle:** A developer from Rwanda who won a national hackathon and builds real civic tech  
-**Target Outcome:** Hired at a global company / remote position within 90 days of launch  
+### Vercel (recommended)
+1. Import the repo at [vercel.com/new](https://vercel.com/new)
+2. Framework: **Vite**
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Deploy
 
----
-
-## 🎯 The Core Positioning Statement
-
-> *"I'm a Full-Stack Developer from Kigali building applications that solve real problems for real people — from public health to justice access. I write clean code, ship fast, and think in systems."*
-
-This sentence should drive every design and content decision in the portfolio.
-
----
-
-## 📋 How to Use These Documents
-
-1. **Read in order** (01 → 13) for full context before writing any code
-2. **Keep this README open** as a master navigation reference
-3. **Documents 04 and 05** are the most critical for implementation
-4. **Document 12** contains your real content — don't write placeholder text
-5. **Document 13** is your CMS schema — implement this before building UI
+### Manual / VPS
+```bash
+npm run build
+# Serve the dist/ folder with Nginx or any static file server
+```
 
 ---
 
-*Last Updated: 2026 | Version 1.0*
+## Contact
+
+**Jean Bosco Dusengimana**
+Full-Stack Software Developer · Kigali, Rwanda (UTC+2)
+
+- Email: [dusengimana06@gmail.com](mailto:dusengimana06@gmail.com)
+- GitHub: [github.com/bosco250](https://github.com/bosco250)
+- LinkedIn: [linkedin.com/in/jean-bosco-dusengimana](https://linkedin.com/in/jean-bosco-dusengimana)
+- Phone: +250 786 946 188
