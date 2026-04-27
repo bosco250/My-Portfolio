@@ -763,3 +763,10 @@ body {
   .mobile-frame-outer   { width: 280px; }
   .browser-urlbar       { display: none; }
 }
+
+/* ── Browser progress bar animation ─────────────────────────── */
+@keyframes browser-progress {
+  0%   { width: 0%;   margin-left: 0; }
+  50%  { width: 60%;  margin-left: 20%; }
+  100% { width: 0%;   margin-left: 100%; }
+}
