@@ -1,30 +1,48 @@
 /**
  * BrowserPreviewModal
  *
- * Now that hyppopeace.com's Nginx config uses X-Frame-Options: ALLOWALL,
- * we can embed it in a real interactive iframe — full scroll, click, hover.
+ * Industry-standard approach for portfolio project previews:
+ * X-Frame-Options cannot be bypassed client-side — it's a browser security
+ * enforcement. The correct solution used by Framer, Linear, and similar
+ * products is screenshot-based preview for sites you don't control.
  *
- * For projects without a liveUrl, we show the NoPreviewModal.
+ * Strategy:
+ *  1. If project has a staticScreenshot → use it (fastest, most reliable)
+ *  2. Otherwise → fetch live screenshot via Microlink API (free, no key needed)
+ *  3. "Open site" button always visible for the real thing
  */
 
-import { useEffect, useRef, useState } from 'react'
-import { X, RefreshCw, ExternalLink, Monitor, Smartphone, ArrowLeft, ArrowRight } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { X, ExternalLink, Monitor, Smartphone, RefreshCw } from 'lucide-react'
 
 interface Props {
   url: string
   title: string
+  /** Path to a local/CDN screenshot, e.g. /screenshots/breakthrough.jpg */
+  staticScreenshot?: string
   onClose: () => void
 }
 
-type ViewMode  = 'desktop' | 'mobile'
-type LoadState = 'loading' | 'loaded' | 'error'
+type ViewMode   = 'desktop' | 'mobile'
+type ImageState = 'loading' | 'loaded' | 'error'
 
-export default function BrowserPreviewModal({ url, title, onClose }: Props) {
-  const iframeRef  = useRef<HTMLIFrameElement>(null)
-  const [view,      setView]      = useState<ViewMode>('desktop')
-  const [loadState, setLoadState] = useState<LoadState>('loading')
-  const [reloadKey, setReloadKey] = useState(0)
-  const [currentUrl, setCurrentUrl] = useState(url)
+// Microlink embed URL — returns the screenshot image directly (no JSON, no API key)
+// ?embed=screenshot.url makes it return the image URL as a redirect
+function getMicrolinkUrl(url: string, mobile: boolean) {
+  const params = new URLSearchParams({
+    url,
+    screenshot: 'true',
+    meta: 'false',
+    embed: 'screenshot.url',
+    ...(mobile ? { viewport: JSON.stringify({ width: 375, height: 812 }) } : {}),
+  })
+  return `https://api.microlink.io/?${params.toString()}`
+}
+
+export default function BrowserPreviewModal({ url, title, staticScreenshot, onClose }: Props) {
+  const [view,       setView]       = useState<ViewMode>('desktop')
+  const [imgState,   setImgState]   = useState<ImageState>('loading')
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Lock scroll + Escape
   useEffect(() => {
@@ -37,35 +55,13 @@ export default function BrowserPreviewModal({ url, title, onClose }: Props) {
     }
   }, [onClose])
 
-  // Reset on reload/view change
-  useEffect(() => {
-    setLoadState('loading')
-    setCurrentUrl(url)
-  }, [reloadKey, url])
-
-  const handleLoad = () => {
-    // Try to read the current URL from the iframe (works if same-origin after nav)
-    try {
-      const loc = iframeRef.current?.contentWindow?.location?.href
-      if (loc && loc !== 'about:blank') setCurrentUrl(loc)
-    } catch {
-      // cross-origin nav — keep showing original url
-    }
-    setLoadState('loaded')
-  }
-
-  const handleError = () => setLoadState('error')
-
-  const reload = () => {
-    setLoadState('loading')
-    setReloadKey(k => k + 1)
-  }
+  // Reset image state when view or refresh changes
+  useEffect(() => { setImgState('loading') }, [view, refreshKey])
 
   const isMobile = view === 'mobile'
 
-  // Viewport dimensions
-  const desktopWidth  = 'min(1060px, 94vw)'
-  const mobileWidth   = '420px'
+  // Prefer static screenshot, fall back to Microlink live screenshot
+  const imgSrc = staticScreenshot || getMicrolinkUrl(url, isMobile)
 
   return (
     <div
@@ -77,7 +73,7 @@ export default function BrowserPreviewModal({ url, title, onClose }: Props) {
     >
       <div
         className="browser-modal-window"
-        style={{ width: isMobile ? mobileWidth : desktopWidth }}
+        style={{ width: isMobile ? '480px' : 'min(1060px, 94vw)' }}
       >
         {/* ── macOS chrome ──────────────────────────────────── */}
         <div className="browser-chrome">
@@ -93,90 +89,55 @@ export default function BrowserPreviewModal({ url, title, onClose }: Props) {
             <span className="traffic-light tl-green"  aria-hidden="true" />
           </div>
 
-          {/* Back / Forward / Reload */}
-          <div style={{ display: 'flex', gap: '2px', marginLeft: '4px' }}>
-            <button
-              className="browser-ctrl-btn"
-              onClick={() => iframeRef.current?.contentWindow?.history.back()}
-              aria-label="Back"
-              title="Back"
-            >
-              <ArrowLeft size={13} />
-            </button>
-            <button
-              className="browser-ctrl-btn"
-              onClick={() => iframeRef.current?.contentWindow?.history.forward()}
-              aria-label="Forward"
-              title="Forward"
-            >
-              <ArrowRight size={13} />
-            </button>
-            <button
-              className="browser-ctrl-btn"
-              onClick={reload}
-              aria-label="Reload"
-              title="Reload"
-            >
-              <RefreshCw
-                size={13}
-                style={{
-                  animation: loadState === 'loading' ? 'spin 0.8s linear infinite' : 'none',
-                  color: loadState === 'loading' ? 'var(--color-accent)' : undefined,
-                }}
-              />
-            </button>
-          </div>
-
           {/* URL bar */}
-          <div className="browser-urlbar" style={{ flex: 1 }}>
+          <div className="browser-urlbar">
             <svg
               width="11" height="11" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" strokeWidth="2.5"
               aria-hidden="true"
-              style={{ color: loadState === 'loaded' ? 'var(--color-accent)' : 'var(--color-text-muted)', flexShrink: 0 }}
+              style={{ color: 'var(--color-accent)', flexShrink: 0 }}
             >
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span className="browser-urlbar-text">{currentUrl}</span>
-            {loadState === 'loading' && (
-              <div style={{
-                marginLeft: 'auto',
-                width: '60%',
-                height: '3px',
-                borderRadius: '2px',
-                background: 'var(--color-border)',
-                overflow: 'hidden',
-                flexShrink: 0,
-              }}>
-                <div style={{
-                  height: '100%',
-                  background: 'var(--color-accent)',
-                  borderRadius: '2px',
-                  animation: 'browser-progress 1.5s ease-in-out infinite',
-                }} />
-              </div>
-            )}
+            <span className="browser-urlbar-text">{url}</span>
           </div>
 
-          {/* View toggle + external link + close */}
+          {/* Controls */}
           <div className="browser-controls">
             <button
               className={`browser-view-btn ${!isMobile ? 'active' : ''}`}
-              onClick={() => { setView('desktop'); reload() }}
+              onClick={() => setView('desktop')}
               aria-label="Desktop view"
               title="Desktop"
             >
               <Monitor size={14} />
             </button>
+
             <button
               className={`browser-view-btn ${isMobile ? 'active' : ''}`}
-              onClick={() => { setView('mobile'); reload() }}
+              onClick={() => setView('mobile')}
               aria-label="Mobile view"
               title="Mobile"
             >
               <Smartphone size={14} />
             </button>
+
+            {!staticScreenshot && (
+              <button
+                className="browser-ctrl-btn"
+                onClick={() => setRefreshKey(k => k + 1)}
+                aria-label="Refresh screenshot"
+                title="Refresh screenshot"
+              >
+                <RefreshCw
+                  size={13}
+                  style={{
+                    animation: imgState === 'loading' ? 'spin 0.8s linear infinite' : 'none',
+                  }}
+                />
+              </button>
+            )}
 
             <a
               href={url}
@@ -205,52 +166,30 @@ export default function BrowserPreviewModal({ url, title, onClose }: Props) {
             /* iPhone frame */
             <div className="mobile-frame-outer">
               <div className="mobile-notch" aria-hidden="true" />
-              <div className="mobile-iframe-wrap">
-                {loadState === 'loading' && <BrowserShimmer />}
-                {loadState === 'error'   && <ErrorState url={url} />}
-                <iframe
-                  key={`${reloadKey}-mobile`}
-                  ref={iframeRef}
-                  src={url}
-                  title={`Preview of ${title}`}
-                  onLoad={handleLoad}
-                  onError={handleError}
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    border: 'none',
-                    display: loadState === 'error' ? 'none' : 'block',
-                    opacity: loadState === 'loaded' ? 1 : 0,
-                    transition: 'opacity 0.3s ease',
-                  }}
+              <div className="mobile-iframe-wrap" style={{ background: '#fff' }}>
+                <ScreenshotView
+                  key={`${view}-${refreshKey}`}
+                  src={imgSrc}
+                  alt={title}
+                  url={url}
+                  imgState={imgState}
+                  onLoad={() => setImgState('loaded')}
+                  onError={() => setImgState('error')}
                 />
               </div>
               <div className="mobile-home-bar" aria-hidden="true" />
             </div>
           ) : (
             /* Desktop full-width */
-            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-              {loadState === 'loading' && <BrowserShimmer />}
-              {loadState === 'error'   && <ErrorState url={url} />}
-              <iframe
-                key={`${reloadKey}-desktop`}
-                ref={iframeRef}
-                src={url}
-                title={`Preview of ${title}`}
-                onLoad={handleLoad}
-                onError={handleError}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  display: loadState === 'error' ? 'none' : 'block',
-                  opacity: loadState === 'loaded' ? 1 : 0,
-                  transition: 'opacity 0.35s ease',
-                }}
-              />
-            </div>
+            <ScreenshotView
+              key={`${view}-${refreshKey}`}
+              src={imgSrc}
+              alt={title}
+              url={url}
+              imgState={imgState}
+              onLoad={() => setImgState('loaded')}
+              onError={() => setImgState('error')}
+            />
           )}
         </div>
       </div>
@@ -258,69 +197,140 @@ export default function BrowserPreviewModal({ url, title, onClose }: Props) {
   )
 }
 
-// ── Shimmer skeleton ──────────────────────────────────────────
-function BrowserShimmer() {
-  return (
-    <div style={{
-      position: 'absolute', inset: 0, zIndex: 2,
-      background: '#f8f8f8',
-      padding: '0',
-      overflow: 'hidden',
-    }}>
-      {/* Fake page nav */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #e5e5e5', padding: '12px 20px', display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <div style={{ width: '80px', height: '20px', background: '#e8e8e8', borderRadius: '4px' }} />
-        <div style={{ display: 'flex', gap: '12px', marginLeft: 'auto' }}>
-          {[60, 50, 55, 45].map((w, i) => (
-            <div key={i} style={{ width: `${w}px`, height: '12px', background: '#e8e8e8', borderRadius: '3px' }} />
-          ))}
-        </div>
-      </div>
-      {/* Fake hero */}
-      <div className="shimmer" style={{ height: '220px', width: '100%', borderRadius: 0 }} />
-      {/* Fake content */}
-      <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div className="shimmer" style={{ height: '14px', width: '55%', borderRadius: '4px' }} />
-        <div className="shimmer" style={{ height: '10px', width: '80%', borderRadius: '4px' }} />
-        <div className="shimmer" style={{ height: '10px', width: '70%', borderRadius: '4px' }} />
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          {[1, 2, 3].map(i => (
-            <div key={i} className="shimmer" style={{ height: '80px', flex: 1, borderRadius: '6px' }} />
-          ))}
-        </div>
-      </div>
-      {/* Loading bar at top */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '3px', background: '#e5e5e5', overflow: 'hidden' }}>
-        <div style={{
-          height: '100%',
-          background: 'var(--color-accent)',
-          animation: 'browser-progress 1.5s ease-in-out infinite',
-        }} />
-      </div>
-    </div>
-  )
+// ── Screenshot view with shimmer + error state ────────────────
+interface SVProps {
+  src: string
+  alt: string
+  url: string
+  imgState: ImageState
+  onLoad: () => void
+  onError: () => void
 }
 
-// ── Error state ───────────────────────────────────────────────
-function ErrorState({ url }: { url: string }) {
+function ScreenshotView({ src, alt, url, imgState, onLoad, onError }: SVProps) {
   return (
-    <div style={{
-      position: 'absolute', inset: 0, zIndex: 2,
-      background: 'var(--color-bg-base)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-    }}>
-      <div style={{ textAlign: 'center', padding: '2rem', maxWidth: '320px' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚠️</div>
-        <h4 style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '0.5rem', fontSize: 'var(--text-base)' }}>
-          Couldn't load the page
-        </h4>
-        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-          The site may be temporarily unavailable. Try opening it directly.
-        </p>
-        <a href={url} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '8px 20px', fontSize: 'var(--text-sm)' }}>
-          Open site <ExternalLink size={13} />
-        </a>
-      </div>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#f5f5f5' }}>
+      {/* Shimmer skeleton while loading */}
+      {imgState === 'loading' && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          background: 'var(--color-bg-base)',
+          padding: '20px',
+          display: 'flex', flexDirection: 'column', gap: '12px',
+        }}>
+          {/* Fake browser nav bar */}
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
+            <div className="shimmer" style={{ width: '60px', height: '8px', borderRadius: '4px' }} />
+            <div className="shimmer" style={{ width: '80px', height: '8px', borderRadius: '4px' }} />
+            <div className="shimmer" style={{ width: '50px', height: '8px', borderRadius: '4px' }} />
+          </div>
+          {/* Fake hero */}
+          <div className="shimmer" style={{ height: '180px', width: '100%', borderRadius: '8px' }} />
+          {/* Fake content rows */}
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="shimmer" style={{ height: '100px', flex: 1, borderRadius: '6px' }} />
+            <div className="shimmer" style={{ height: '100px', flex: 1, borderRadius: '6px' }} />
+            <div className="shimmer" style={{ height: '100px', flex: 1, borderRadius: '6px' }} />
+          </div>
+          {[85, 65, 75].map((w, i) => (
+            <div key={i} className="shimmer" style={{ height: '10px', width: `${w}%`, borderRadius: '4px', animationDelay: `${i * 0.1}s` }} />
+          ))}
+          {/* Loading label */}
+          <div style={{
+            position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)',
+            display: 'flex', alignItems: 'center', gap: '8px',
+            fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--color-text-muted)',
+          }}>
+            <RefreshCw size={11} style={{ animation: 'spin 0.8s linear infinite', color: 'var(--color-accent)' }} />
+            Capturing screenshot…
+          </div>
+        </div>
+      )}
+
+      {/* Error state */}
+      {imgState === 'error' && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          background: 'var(--color-bg-base)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{ textAlign: 'center', padding: '2rem', maxWidth: '320px' }}>
+            <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🌐</div>
+            <h4 style={{
+              fontFamily: 'var(--font-body)', fontWeight: 600,
+              color: 'var(--color-text-primary)', marginBottom: '0.5rem',
+              fontSize: 'var(--text-base)',
+            }}>
+              Screenshot unavailable
+            </h4>
+            <p style={{
+              fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)',
+              lineHeight: 1.6, marginBottom: '1.25rem',
+            }}>
+              The screenshot service couldn't capture this page right now.
+              Open it directly to see it live.
+            </p>
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary"
+              style={{ padding: '8px 20px', fontSize: 'var(--text-sm)' }}
+            >
+              Open site <ExternalLink size={13} />
+            </a>
+          </div>
+        </div>
+      )}
+
+      {/* The screenshot image */}
+      <img
+        src={src}
+        alt={`Screenshot of ${alt}`}
+        onLoad={onLoad}
+        onError={onError}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: 'top center',
+          display: 'block',
+          opacity: imgState === 'loaded' ? 1 : 0,
+          transition: 'opacity 0.4s ease',
+        }}
+      />
+
+      {/* Bottom overlay — always visible once loaded */}
+      {imgState === 'loaded' && (
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          background: 'linear-gradient(to top, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.5) 50%, transparent 100%)',
+          padding: '2.5rem 1.5rem 1.25rem',
+          display: 'flex', alignItems: 'flex-end',
+          justifyContent: 'space-between', gap: '1rem',
+        }}>
+          <div>
+            <p style={{
+              fontFamily: 'var(--font-mono)', fontSize: '0.65rem',
+              color: 'var(--color-text-muted)', marginBottom: '3px', letterSpacing: '0.05em',
+            }}>
+              live screenshot
+            </p>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+              {url}
+            </p>
+          </div>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+            style={{ padding: '8px 18px', fontSize: 'var(--text-sm)', whiteSpace: 'nowrap', flexShrink: 0 }}
+          >
+            Open site <ExternalLink size={12} />
+          </a>
+        </div>
+      )}
     </div>
   )
 }
@@ -342,7 +352,9 @@ export function NoPreviewModal({ title, reason, onClose }: {
     <div
       className="browser-modal-overlay"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
-      role="dialog" aria-modal="true" aria-label={`Preview: ${title}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Preview: ${title}`}
     >
       <div className="browser-modal-window" style={{ width: 'min(620px, 92vw)' }}>
         <div className="browser-chrome">
@@ -368,16 +380,31 @@ export function NoPreviewModal({ title, reason, onClose }: {
             </button>
           </div>
         </div>
-        <div className="browser-viewport" style={{ height: '280px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg-base)' }}>
+
+        <div className="browser-viewport" style={{
+          height: '280px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: 'var(--color-bg-base)',
+        }}>
           <div style={{ textAlign: 'center', padding: '2rem', maxWidth: '380px' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🔒</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.75rem' }}>
+            <h3 style={{
+              fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)',
+              fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: '0.75rem',
+            }}>
               {title}
             </h3>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65, marginBottom: '1.5rem' }}>
+            <p style={{
+              fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)',
+              lineHeight: 1.65, marginBottom: '1.5rem',
+            }}>
               {reason}
             </p>
-            <button onClick={onClose} className="btn btn-ghost" style={{ padding: '8px 20px', fontSize: 'var(--text-sm)' }}>
+            <button
+              onClick={onClose}
+              className="btn btn-ghost"
+              style={{ padding: '8px 20px', fontSize: 'var(--text-sm)' }}
+            >
               Close
             </button>
           </div>
