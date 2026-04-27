@@ -460,6 +460,12 @@ body {
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   box-sizing: border-box;
+  /* Fix select option visibility in dark mode */
+  color-scheme: dark;
+}
+.form-input option {
+  background: var(--color-bg-overlay);
+  color: var(--color-text-primary);
 }
 .form-input::placeholder { color: var(--color-text-muted); }
 .form-input:focus {

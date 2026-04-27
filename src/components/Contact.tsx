@@ -1,7 +1,16 @@
 import { useState } from 'react'
+import emailjs from '@emailjs/browser'
 import { Mail, Send, Clock, MapPin } from 'lucide-react'
 import { personal } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
+
+// ── EmailJS config ────────────────────────────────────────────
+// Sign up free at emailjs.com → create a service → create a template
+// Then replace these three values. The template should use:
+//   {{from_name}}, {{from_email}}, {{inquiry_type}}, {{message}}
+const EMAILJS_SERVICE_ID  = 'service_5zfor6f'
+const EMAILJS_TEMPLATE_ID = 'template_zzd3fj9'
+const EMAILJS_PUBLIC_KEY  = 'M1YHkKU2BakhwIx94'
 
 const GithubIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -24,18 +33,41 @@ type FormState = 'idle' | 'sending' | 'sent' | 'error'
 export default function Contact() {
   const { ref, visible } = useReveal()
   const [formState, setFormState] = useState<FormState>('idle')
-  const [form, setForm] = useState({ name: '', email: '', type: 'Job Offer', message: '', honeypot: '' })
+  const [errorMsg,  setErrorMsg]  = useState('')
+  const [form, setForm] = useState({
+    names: '', email: '', subject: 'Job Offer', message: '', honeypot: '',
+  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (form.honeypot) return
+    if (form.honeypot) return // spam trap
+
     setFormState('sending')
-    await new Promise((r) => setTimeout(r, 1400))
-    setFormState('sent')
+    setErrorMsg('')
+
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          names:    form.names,
+          email:    form.email,
+          subject:  form.subject,
+          message:  form.message,
+          to_email: personal.email,
+        },
+        EMAILJS_PUBLIC_KEY
+      )
+      setFormState('sent')
+    } catch (err) {
+      console.error('EmailJS error:', err)
+      setErrorMsg('Something went wrong. Please email me directly at ' + personal.email)
+      setFormState('error')
+    }
   }
 
   return (
@@ -43,32 +75,40 @@ export default function Contact() {
       <div
         ref={ref}
         className={`reveal ${visible ? 'visible' : ''}`}
-        style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'start' }}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '4rem',
+          alignItems: 'start',
+        }}
       >
-        {/* Left */}
+        {/* ── Left: info ────────────────────────────────── */}
         <div>
           <div className="section-label" style={{ marginBottom: '0.75rem' }}>Contact</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-4xl)', fontWeight: 900, color: 'var(--color-text-primary)', lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: '1.25rem' }}>
+          <h2 style={{
+            fontFamily: 'var(--font-display)', fontSize: 'var(--text-4xl)',
+            fontWeight: 900, color: 'var(--color-text-primary)',
+            lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: '1.25rem',
+          }}>
             Let's work<br />
             <span className="gradient-text">together</span>
           </h2>
 
-          <p style={{ fontSize: 'var(--text-base)', color: 'var(--color-text-secondary)', lineHeight: 1.7, marginBottom: '2rem' }}>
+          <p style={{
+            fontSize: 'var(--text-base)', color: 'var(--color-text-secondary)',
+            lineHeight: 1.7, marginBottom: '2rem',
+          }}>
             I'm open to full-time remote roles, freelance projects, and collaborations that are worth the time.
             If you're building something real and need someone who can own the full stack — let's talk.
           </p>
 
           {personal.isAvailable && (
             <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
               background: 'var(--color-accent-muted)',
               border: '1px solid rgba(0,200,150,0.25)',
               borderRadius: 'var(--radius-full)',
-              padding: '6px 14px',
-              marginBottom: '2rem',
-              cursor: 'default',
+              padding: '6px 14px', marginBottom: '2rem', cursor: 'default',
             }}>
               <span className="animate-pulse-dot" style={{ width: '7px', height: '7px', background: 'var(--color-accent)', display: 'inline-block' }} />
               <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
@@ -77,7 +117,6 @@ export default function Contact() {
             </div>
           )}
 
-          {/* Contact details */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '2rem' }}>
             {[
               { icon: <Mail size={15} />, content: <a href={`mailto:${personal.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>{personal.email}</a> },
@@ -87,22 +126,12 @@ export default function Contact() {
               <div
                 key={i}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--color-text-secondary)',
-                  transition: 'color 0.2s, transform 0.2s',
-                  cursor: 'default',
+                  display: 'flex', alignItems: 'center', gap: '10px',
+                  fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)',
+                  transition: 'color 0.2s, transform 0.2s', cursor: 'default',
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-primary)'
-                  e.currentTarget.style.transform = 'translateX(4px)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'var(--color-text-secondary)'
-                  e.currentTarget.style.transform = 'translateX(0)'
-                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.transform = 'translateX(4px)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.transform = 'translateX(0)' }}
               >
                 <span style={{ color: 'var(--color-accent)', flexShrink: 0 }}>{icon}</span>
                 {content}
@@ -110,7 +139,6 @@ export default function Contact() {
             ))}
           </div>
 
-          {/* Social */}
           <div style={{ display: 'flex', gap: '0.75rem' }}>
             {[
               { href: personal.github,   icon: <GithubIcon />,   label: 'GitHub' },
@@ -124,7 +152,7 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Right: form */}
+        {/* ── Right: form ───────────────────────────────── */}
         <div
           className="glow-card"
           style={{
@@ -155,30 +183,64 @@ export default function Contact() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate>
+              {/* Honeypot */}
               <input type="text" name="honeypot" value={form.honeypot} onChange={handleChange} style={{ display: 'none' }} tabIndex={-1} aria-hidden="true" />
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                  <FormField label="Name">
-                    <input id="name" name="name" type="text" required value={form.name} onChange={handleChange} placeholder="Your name" className="form-input" />
+                  <FormField label="Name" htmlFor="names">
+                    <input
+                      id="names" name="names" type="text" required
+                      value={form.names} onChange={handleChange}
+                      placeholder="Your name" className="form-input"
+                    />
                   </FormField>
-                  <FormField label="Email">
-                    <input id="email" name="email" type="email" required value={form.email} onChange={handleChange} placeholder="you@company.com" className="form-input" />
+                  <FormField label="Email" htmlFor="email">
+                    <input
+                      id="email" name="email" type="email" required
+                      value={form.email} onChange={handleChange}
+                      placeholder="you@company.com" className="form-input"
+                    />
                   </FormField>
                 </div>
 
-                <FormField label="Inquiry type">
-                  <select id="type" name="type" value={form.type} onChange={handleChange} className="form-input" style={{ cursor: 'pointer' }}>
-                    <option>Job Offer</option>
-                    <option>Freelance</option>
-                    <option>Collaboration</option>
-                    <option>Other</option>
+                <FormField label="Subject" htmlFor="subject">
+                  <select
+                    id="subject" name="subject"
+                    value={form.subject} onChange={handleChange}
+                    className="form-input"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <option value="Job Offer">Job Offer</option>
+                    <option value="Freelance">Freelance</option>
+                    <option value="Collaboration">Collaboration</option>
+                    <option value="Other">Other</option>
                   </select>
                 </FormField>
 
-                <FormField label="Message">
-                  <textarea id="message" name="message" required rows={5} value={form.message} onChange={handleChange} placeholder="Tell me about the project or opportunity..." className="form-input" style={{ resize: 'vertical', minHeight: '120px' }} />
+                <FormField label="Message" htmlFor="message">
+                  <textarea
+                    id="message" name="message" required rows={5}
+                    value={form.message} onChange={handleChange}
+                    placeholder="Tell me about the project or opportunity..."
+                    className="form-input"
+                    style={{ resize: 'vertical', minHeight: '120px' }}
+                  />
                 </FormField>
+
+                {/* Error message */}
+                {formState === 'error' && (
+                  <p style={{
+                    fontSize: 'var(--text-xs)', color: '#EF4444',
+                    fontFamily: 'var(--font-mono)', lineHeight: 1.5,
+                    padding: '8px 12px',
+                    background: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    borderRadius: 'var(--radius-md)',
+                  }}>
+                    {errorMsg}
+                  </p>
+                )}
 
                 <button
                   type="submit"
@@ -196,12 +258,19 @@ export default function Contact() {
                   {formState === 'sending' ? (
                     <>
                       <span className="animate-spin" style={{ width: '14px', height: '14px', border: '2px solid rgba(10,10,15,0.3)', borderTopColor: 'var(--color-text-inverse)', borderRadius: '50%', display: 'inline-block' }} />
-                      Sending...
+                      Sending…
                     </>
                   ) : (
                     <>Send Message <Send size={14} /></>
                   )}
                 </button>
+
+                <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
+                  or email directly →{' '}
+                  <a href={`mailto:${personal.email}`} style={{ color: 'var(--color-accent)', textDecoration: 'none' }}>
+                    {personal.email}
+                  </a>
+                </p>
               </div>
             </form>
           )}
@@ -211,12 +280,20 @@ export default function Contact() {
   )
 }
 
-function FormField({ label, children }: { label: string; children: React.ReactNode }) {
+function FormField({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
   return (
     <div>
       <label
-        htmlFor={label.toLowerCase().replace(' ', '-')}
-        style={{ display: 'block', fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: '6px', letterSpacing: '0.05em', textTransform: 'uppercase' }}
+        htmlFor={htmlFor}
+        style={{
+          display: 'block',
+          fontSize: 'var(--text-xs)',
+          color: 'var(--color-text-muted)',
+          fontFamily: 'var(--font-mono)',
+          marginBottom: '6px',
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+        }}
       >
         {label}
       </label>
