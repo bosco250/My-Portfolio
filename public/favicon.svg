@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <!-- Background -->
+  <rect width="48" height="48" rx="10" fill="#0A0A0F"/>
+  <rect width="48" height="48" rx="10" fill="url(#bg-grad)" opacity="0.6"/>
+
+  <!-- J -->
+  <text
+    x="7"
+    y="35"
+    font-family="Georgia, serif"
+    font-weight="900"
+    font-size="28"
+    fill="#F0F0F8"
+    letter-spacing="-1"
+  >J</text>
+
+  <!-- B -->
+  <text
+    x="24"
+    y="35"
+    font-family="Georgia, serif"
+    font-weight="900"
+    font-size="28"
+    fill="#00C896"
+    letter-spacing="-1"
+  >B</text>
+
+  <!-- Accent dot -->
+  <circle cx="42" cy="38" r="3" fill="#00C896"/>
+
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F0F1E"/>
+      <stop offset="100%" stop-color="#0A1A14"/>
+    </linearGradient>
+  </defs>
+</svg>
