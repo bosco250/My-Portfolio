@@ -3,31 +3,38 @@ import { skills } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
 
 const categoryIcons: Record<string, string> = {
-  Frontend:            '⬡',
-  Backend:             '⬢',
-  'Tools & Infra':     '⚙',
-  'Currently Learning':'→',
+  Languages:            '{ }',
+  Frontend:             '⬡',
+  Backend:              '⬢',
+  'Data & Storage':     '▤',
+  Mobile:               '▢',
+  'Security & Payments':'⚿',
+  'Testing & Performance': '◈',
+  'Tools & DevOps':     '⚙',
+  'Currently Learning': '→',
 }
 
 export default function Skills() {
   const { ref, visible } = useReveal()
 
   return (
-    <section id="skills" style={{ padding: '6rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <div ref={ref} className={`reveal ${visible ? 'visible' : ''}`} style={{ marginBottom: '3rem' }}>
-        <div className="section-label" style={{ marginBottom: '0.75rem' }}>Technical Skills</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-4xl)', fontWeight: 900, color: 'var(--color-text-primary)', lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: '1rem' }}>
-          What I reach for
-        </h2>
-        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-secondary)', maxWidth: '480px', lineHeight: 1.6 }}>
-          Tools I've used in production, not just tutorials. The "Currently Learning" section is honest.
-        </p>
-      </div>
+    <section id="skills" className="section">
+      <div className="section-inner">
+        <div ref={ref} className={`reveal section-head ${visible ? 'visible' : ''}`}>
+          <div className="section-label">Technical Skills</div>
+          <h2 className="section-title">What I reach for</h2>
+          <p className="section-lede">
+            Tools I've used in production, not just tutorials. The "Currently Learning" section is honest.
+          </p>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.25rem' }}>
-        {skills.map((group, i) => (
-          <SkillGroup key={group.category} group={group} index={i} />
-        ))}
+        {/* Three-up: nine groups fill 3x3 exactly, where four columns left an
+            orphan on the last row. */}
+        <div className="grid-3up">
+          {skills.map((group, i) => (
+            <SkillGroup key={group.category} group={group} index={i} />
+          ))}
+        </div>
       </div>
     </section>
   )
@@ -47,13 +54,13 @@ function SkillGroup({ group, index }: { group: typeof skills[0]; index: number }
       style={{
         background: isLearning ? 'var(--color-accent-muted)' : 'var(--color-bg-elevated)',
         border: `1px solid ${hovered
-          ? (isLearning ? 'rgba(0,200,150,0.4)' : 'var(--color-border-focus)')
-          : (isLearning ? 'rgba(0,200,150,0.2)' : 'var(--color-border)')}`,
+          ? (isLearning ? 'var(--color-accent-strong)' : 'var(--color-border-focus)')
+          : (isLearning ? 'var(--color-accent-border)' : 'var(--color-border)')}`,
         borderRadius: 'var(--radius-xl)',
-        padding: '1.5rem',
+        padding: 'var(--card-pad)',
         transitionDelay: `${index * 60}ms`,
         transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 8px 28px rgba(0,0,0,0.2)' : 'none',
+        boxShadow: hovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '1rem' }}>

@@ -1,10 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
+import Highlights from './components/Highlights'
+import Capabilities from './components/Capabilities'
 import Projects from './components/Projects'
 import About from './components/About'
 import Skills from './components/Skills'
 import Experience from './components/Experience'
+import CtaBand from './components/CtaBand'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import Terminal from './components/Terminal'
@@ -28,22 +31,6 @@ export default function App() {
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Mouse glow on glow-cards
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      const cards = document.querySelectorAll<HTMLElement>('.glow-card')
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        const y = e.clientY - rect.top
-        card.style.setProperty('--mouse-x', `${x}px`)
-        card.style.setProperty('--mouse-y', `${y}px`)
-      })
-    }
-    window.addEventListener('mousemove', onMove, { passive: true })
-    return () => window.removeEventListener('mousemove', onMove)
   }, [])
 
   // Terminal easter egg
@@ -74,10 +61,13 @@ export default function App() {
       <Navbar />
       <main id="main-content">
         <Hero />
+        <Highlights />
+        <Capabilities />
         <Projects />
         <About />
         <Skills />
         <Experience />
+        <CtaBand />
         <Contact />
       </main>
       <Footer />

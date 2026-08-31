@@ -2,7 +2,7 @@
  * BrowserPreviewModal
  *
  * Industry-standard approach for portfolio project previews:
- * X-Frame-Options cannot be bypassed client-side — it's a browser security
+ * X-Frame-Options cannot be bypassed client-side. It's a browser security
  * enforcement. The correct solution used by Framer, Linear, and similar
  * products is screenshot-based preview for sites you don't control.
  *
@@ -26,7 +26,7 @@ interface Props {
 type ViewMode   = 'desktop' | 'mobile'
 type ImageState = 'loading' | 'loaded' | 'error'
 
-// Microlink embed URL — returns the screenshot image directly (no JSON, no API key)
+// Microlink embed URL: returns the screenshot image directly (no JSON, no API key)
 // ?embed=screenshot.url makes it return the image URL as a redirect
 function getMicrolinkUrl(url: string, mobile: boolean) {
   const params = new URLSearchParams({
@@ -75,7 +75,7 @@ export default function BrowserPreviewModal({ url, title, staticScreenshot, onCl
         className="browser-modal-window"
         style={{ width: isMobile ? '480px' : 'min(1060px, 94vw)' }}
       >
-        {/* ── macOS chrome ──────────────────────────────────── */}
+        {/* macOS chrome */}
         <div className="browser-chrome">
           {/* Traffic lights */}
           <div className="browser-traffic-lights">
@@ -160,7 +160,7 @@ export default function BrowserPreviewModal({ url, title, staticScreenshot, onCl
           </div>
         </div>
 
-        {/* ── Viewport ──────────────────────────────────────── */}
+        {/* Viewport */}
         <div className="browser-viewport">
           {isMobile ? (
             /* iPhone frame */
@@ -197,7 +197,7 @@ export default function BrowserPreviewModal({ url, title, staticScreenshot, onCl
   )
 }
 
-// ── Screenshot view with shimmer + error state ────────────────
+// Screenshot view with shimmer + error state
 interface SVProps {
   src: string
   alt: string
@@ -300,12 +300,13 @@ function ScreenshotView({ src, alt, url, imgState, onLoad, onError }: SVProps) {
         }}
       />
 
-      {/* Bottom overlay — always visible once loaded */}
+      {/* Bottom overlay, always visible once loaded */}
       {imgState === 'loaded' && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
-          background: 'linear-gradient(to top, rgba(10,10,15,0.92) 0%, rgba(10,10,15,0.5) 50%, transparent 100%)',
-          padding: '2.5rem 1.5rem 1.25rem',
+          background: 'rgba(250,250,248,0.94)',
+          borderTop: '1px solid var(--color-border)',
+          padding: '1.25rem 1.5rem',
           display: 'flex', alignItems: 'flex-end',
           justifyContent: 'space-between', gap: '1rem',
         }}>
@@ -335,7 +336,7 @@ function ScreenshotView({ src, alt, url, imgState, onLoad, onError }: SVProps) {
   )
 }
 
-// ── No live URL modal ─────────────────────────────────────────
+// No live URL modal
 export function NoPreviewModal({ title, reason, onClose }: {
   title: string
   reason: string
@@ -370,7 +371,7 @@ export function NoPreviewModal({ title, reason, onClose }: {
               <rect x="3" y="11" width="18" height="11" rx="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span className="browser-urlbar-text" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            <span className="browser-urlbar-text" style={{ color: 'var(--color-border-focus)' }}>
               private · not publicly deployed
             </span>
           </div>

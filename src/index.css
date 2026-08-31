@@ -2,22 +2,47 @@
 
 @import "tailwindcss";
 
-/* ─── Design tokens ─────────────────────────────────────────── */
+/* Design tokens */
 :root {
-  --color-bg-base:      #0A0A0F;
-  --color-bg-elevated:  #111118;
-  --color-bg-overlay:   #1A1A24;
-  --color-border:       #2A2A38;
-  --color-border-focus: #4A4A60;
+  color-scheme: light;
 
-  --color-text-primary:   #F0F0F8;
-  --color-text-secondary: #A0A0B8;
-  --color-text-muted:     #606078;
-  --color-text-inverse:   #0A0A0F;
+  --color-bg-base:      #FAFAF8;
+  --color-bg-elevated:  #FFFFFF;
+  --color-bg-overlay:   #F1F1EC;
+  --color-border:       #E2E2DA;
+  --color-border-focus: #B4B4A6;
 
-  --color-accent:         #00C896;
-  --color-accent-muted:   rgba(0, 200, 150, 0.12);
-  --color-accent-hover:   #00E5A8;
+  --color-text-primary:   #14161C;
+  --color-text-secondary: #454A57;
+  --color-text-muted:     #6A7180;
+  --color-text-inverse:   #FFFFFF;
+
+  /* Accent darkened from #00C896 to hold AA contrast on light surfaces */
+  --color-accent:         #007A5C;
+  --color-accent-hover:   #00654C;
+  --color-accent-muted:   rgba(0, 122, 92, 0.10);
+  --color-accent-tint:    rgba(0, 122, 92, 0.06);
+  --color-accent-border:  rgba(0, 122, 92, 0.28);
+  --color-accent-strong:  rgba(0, 122, 92, 0.45);
+  /* Lifted accent for use on the dark header strip, where #007A5C is too dark */
+  --color-accent-on-dark: #3DD9A8;
+
+  /* Surfaces for chrome-style UI (terminal, browser modal) */
+  --color-chrome-bar:     #ECECE6;
+  --color-device-bezel:   #C9C9BE;
+
+  --color-status-live:    #15803D;
+  --color-status-wip:     #B45309;
+  --color-status-error:   #DC2626;
+  --color-accent-gold:    #A16207;
+
+  /* Modal veil stays a dark translucent scrim so overlays read as above the page */
+  --color-scrim:          rgba(20, 22, 28, 0.45);
+
+  --shadow-sm: 0 2px 8px  rgba(20, 22, 28, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 22, 28, 0.08);
+  --shadow-lg: 0 20px 48px rgba(20, 22, 28, 0.12);
+  --shadow-xl: 0 30px 80px rgba(20, 22, 28, 0.18);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'DM Sans', system-ui, -apple-system, sans-serif;
@@ -28,10 +53,10 @@
   --text-base: clamp(1rem,     0.9rem  + 0.5vw,   1.125rem);
   --text-lg:   clamp(1.125rem, 1rem    + 0.625vw, 1.25rem);
   --text-xl:   clamp(1.25rem,  1.1rem  + 0.75vw,  1.5rem);
-  --text-2xl:  clamp(1.5rem,   1.3rem  + 1vw,     2rem);
-  --text-3xl:  clamp(2rem,     1.5rem  + 2.5vw,   3rem);
-  --text-4xl:  clamp(2.5rem,   1.8rem  + 3.5vw,   4.5rem);
-  --text-hero: clamp(3rem,     2rem    + 5vw,      6rem);
+  --text-2xl:  clamp(1.375rem, 1.2rem  + 0.85vw,  1.75rem);
+  --text-3xl:  clamp(1.625rem, 1.35rem + 1.5vw,   2.25rem);
+  --text-4xl:  clamp(1.875rem, 1.45rem + 2.1vw,   2.875rem);
+  --text-hero: clamp(2.5rem,   1.7rem  + 4vw,     4.5rem);
 
   --radius-sm:   4px;
   --radius-md:   8px;
@@ -39,15 +64,47 @@
   --radius-xl:   16px;
   --radius-full: 9999px;
 
+  /* 8px base grid */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.5rem;
+  --space-6:  2rem;
+  --space-8:  3rem;
+  --space-10: 4rem;
+  --space-12: 6rem;
+
+  --container: 1200px;
+
+  /* Fluid layout rhythm: shrinks on small screens instead of holding desktop values */
+  --gutter:     clamp(1rem, 4vw, 1.5rem);
+  --section-y:  clamp(2.5rem, 5.5vw, 4rem);
+  --head-gap:   clamp(1.5rem, 3.5vw, 2.25rem);
+  --card-gap:   clamp(0.75rem, 2vw, 1.25rem);
+  --split-gap:  clamp(1.75rem, 4vw, 2.75rem);
+  --card-pad:    clamp(1rem, 2.5vw, 1.5rem);
+  --card-pad-lg: clamp(1.25rem, 3vw, 1.75rem);
+
   --ease-out-expo:   cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-in-out:     cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Reset ─────────────────────────────────────────────────── */
+/* Reset */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* Clears the fixed header in its scrolled state, so anchored headings are not
+     hidden underneath it. */
+  scroll-padding-top: clamp(72px, 9vw, 84px);
+}
+
+/* Long unbroken strings (emails, URLs) must not force horizontal scroll */
+body, p, li, h1, h2, h3, a, span, div {
+  overflow-wrap: break-word;
+}
 
 body {
   font-family: var(--font-body);
@@ -62,20 +119,20 @@ body {
 
 #root { min-height: 100vh; }
 
-/* ─── Scroll progress bar ────────────────────────────────────── */
+/* Scroll progress bar */
 #scroll-progress {
   position: fixed;
   top: 0;
   left: 0;
   height: 2px;
-  background: linear-gradient(90deg, var(--color-accent), #00A8FF);
+  background: var(--color-accent);
   z-index: 9999;
   transform-origin: left;
   transition: width 0.1s linear;
   pointer-events: none;
 }
 
-/* ─── Skip link ──────────────────────────────────────────────── */
+/* Skip link */
 .skip-link {
   position: absolute;
   top: -100%;
@@ -90,14 +147,14 @@ body {
 }
 .skip-link:focus { top: 1rem; }
 
-/* ─── Focus ring ─────────────────────────────────────────────── */
+/* Focus ring */
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 4px;
   border-radius: var(--radius-sm);
 }
 
-/* ─── Scrollbar ──────────────────────────────────────────────── */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--color-bg-base); }
 ::-webkit-scrollbar-thumb {
@@ -107,7 +164,7 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
-/* ─── Reduced motion ─────────────────────────────────────────── */
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -118,7 +175,7 @@ body {
   #scroll-progress { display: none; }
 }
 
-/* ─── Keyframes ──────────────────────────────────────────────── */
+/* Keyframes */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(28px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -135,8 +192,8 @@ body {
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0 rgba(0,200,150,0.4); }
-  50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(0,200,150,0); }
+  0%, 100% { opacity: 1;   box-shadow: 0 0 0 0 rgba(0,122,92,0.4); }
+  50%       { opacity: 0.7; box-shadow: 0 0 0 5px rgba(0,122,92,0); }
 }
 
 @keyframes float {
@@ -145,17 +202,12 @@ body {
 }
 
 @keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position:  200% center; }
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-@keyframes expandHeight {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes scaleIn {
@@ -163,17 +215,12 @@ body {
   to   { opacity: 1; transform: scale(1); }
 }
 
-@keyframes underlineSlide {
-  from { transform: scaleX(0); }
-  to   { transform: scaleX(1); }
-}
-
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.5; }
   50%       { opacity: 1; }
 }
 
-/* ─── Utility animation classes ──────────────────────────────── */
+/* Utility animation classes */
 .animate-fade-up  { animation: fadeUp  0.65s var(--ease-out-expo) both; }
 .animate-fade-in  { animation: fadeIn  0.5s  ease both; }
 .animate-scale-in { animation: scaleIn 0.4s  var(--ease-spring) both; }
@@ -194,35 +241,512 @@ body {
   animation: spin 0.8s linear infinite;
 }
 
-/* ─── Gradient text ──────────────────────────────────────────── */
-.gradient-text {
-  background: linear-gradient(90deg, #00C896 0%, #00A8FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Accent text */
+.accent-text {
+  color: var(--color-accent);
 }
 
-/* ─── Section label ──────────────────────────────────────────── */
+/* Section label */
 .section-label {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-accent);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-}
-.section-label::before {
-  content: '';
-  display: inline-block;
-  width: 20px;
-  height: 1px;
-  background: var(--color-accent);
-  opacity: 0.6;
 }
 
-/* ─── Tech badge ─────────────────────────────────────────────── */
+/* Header tier 1: thin utility strip (MTN's audience-switcher bar) */
+.topbar {
+  background: var(--color-text-primary);
+  color: var(--color-bg-base);
+}
+.topbar-inner {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+}
+.topbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.topbar-link {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.topbar-link:hover { color: #FFFFFF; }
+
+/* Active audience link, MTN highlights the current one in brand colour */
+.topbar-link-active {
+  color: var(--color-accent-on-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 720px) {
+  .topbar-hide-sm { display: none !important; }
+}
+
+/* Header tier 2: floating solid accent bar (MTN's inset yellow nav bar) */
+.navbar-shell {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 8px var(--gutter) 10px;
+  transition: padding 0.3s var(--ease-out-expo);
+}
+.navbar-bar {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.5rem, 1.5vw, 1.25rem);
+  height: 60px;
+  padding: 0 clamp(0.625rem, 1.5vw, 1.125rem);
+  background: var(--color-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: height 0.3s var(--ease-out-expo), box-shadow 0.3s ease;
+}
+.navbar-scrolled .navbar-shell { padding-top: 6px; padding-bottom: 6px; }
+.navbar-scrolled .navbar-bar {
+  height: 54px;
+  box-shadow: var(--shadow-lg);
+}
+
+/* Logo as an outlined ellipse, mirroring MTN's oval wordmark */
+.logo-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 15px;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.logo-pill:hover {
+  background: #FFFFFF;
+  color: var(--color-accent);
+}
+
+.navbar-link {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  padding: 7px 13px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+.navbar-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #FFFFFF;
+}
+.navbar-link-active {
+  background: #FFFFFF;
+  color: var(--color-accent);
+}
+
+/* Availability pill sitting on the accent bar */
+.navbar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-full);
+  padding: 4px 11px 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* Inverted CTA: white on the accent bar */
+.navbar-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  background: #FFFFFF;
+  color: var(--color-accent);
+  border-radius: var(--radius-full);
+  padding: 9px 20px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-out-expo), box-shadow 0.2s ease;
+}
+.navbar-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.navbar-burger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.14);
+  border: none;
+  border-radius: var(--radius-md);
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.navbar-burger:hover { background: rgba(255, 255, 255, 0.26); }
+
+/* Highlight tiles (MTN's "Top deals" tile grid) */
+.tile-grid {
+  display: grid;
+  gap: var(--card-gap);
+  grid-template-columns: repeat(2, 1fr);
+}
+@media (min-width: 720px) {
+  .tile-grid { grid-template-columns: repeat(3, 1fr); }
+}
+/* Six across only once each tile clears roughly 170px, otherwise titles wrap
+   to three lines. */
+@media (min-width: 1120px) {
+  .tile-grid { grid-template-columns: repeat(6, 1fr); }
+}
+
+.tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 5px;
+  min-height: clamp(104px, 12vw, 126px);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  text-decoration: none;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
+}
+.tile:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.tile-accent {
+  background: var(--color-accent-muted);
+  border-color: var(--color-accent-border);
+}
+.tile-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.tile-title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+.tile-meta {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+/* Capability cards (MTN's "Get doing with MTN" row) */
+.cap-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--card-pad);
+  border-radius: var(--radius-xl);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  transition: border-color 0.2s, transform 0.25s var(--ease-out-expo), box-shadow 0.25s ease;
+}
+.cap-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.cap-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-muted);
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+/* Clamp body copy so cards in a row keep equal height */
+.line-clamp-1,
+.line-clamp-2,
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-1 { -webkit-line-clamp: 1; line-clamp: 1; }
+.line-clamp-2 { -webkit-line-clamp: 2; line-clamp: 2; }
+.line-clamp-3 { -webkit-line-clamp: 3; line-clamp: 3; }
+
+/* Compact icon-only action button */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-overlay);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s,
+              transform 0.2s var(--ease-spring);
+}
+.icon-btn:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background: var(--color-accent-tint);
+  transform: translateY(-2px);
+}
+
+/* Uppercase card action link (MTN's "READ MORE" / "EXPLORE NOW") */
+.card-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: gap 0.2s, color 0.2s;
+}
+.card-cta:hover { gap: 12px; color: var(--color-accent-hover); }
+
+/* Full-width CTA band (MTN's Prestige band) */
+.cta-band {
+  background: var(--color-text-primary);
+  border-radius: var(--radius-xl);
+  padding: clamp(1.75rem, 5vw, 3rem);
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  align-items: center;
+}
+@media (min-width: 820px) {
+  .cta-band { grid-template-columns: 1.5fr auto; gap: var(--space-8); }
+}
+.cta-band-title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  text-wrap: balance;
+}
+.cta-band-sub {
+  font-size: var(--text-base);
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+  margin-top: var(--space-3);
+  max-width: 52ch;
+}
+
+/* Section shell: every section shares one padding, width and header rhythm */
+.section {
+  padding: var(--section-y) var(--gutter);
+}
+
+.section-band {
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-inner {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+.section-head {
+  margin-bottom: var(--head-gap);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: 900;
+  color: var(--color-text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-top: var(--space-3);
+  text-wrap: balance;
+}
+
+.section-lede {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 54ch;
+  margin-top: var(--space-4);
+}
+
+/* Form field pair: side by side only when there is room for both */
+.form-row {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 560px) {
+  .form-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* Card grids
+   Explicit column counts rather than auto-fill, so a row is never left with a
+   single stretched orphan card. Each variant steps only between counts that
+   divide its item count evenly. */
+.grid-2up,
+.grid-3up,
+.grid-4up {
+  display: grid;
+  gap: var(--card-gap);
+  grid-template-columns: 1fr;
+}
+
+.grid-split {
+  display: grid;
+  gap: var(--split-gap);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+@media (min-width: 600px) {
+  .grid-4up { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 700px) {
+  /* Without this step, three-up grids stayed single column until 1024px,
+     which left tablets scrolling through a very tall stack. */
+  .grid-3up { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+  .grid-2up { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 900px) {
+  .grid-split { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 1024px) {
+  .grid-3up { grid-template-columns: repeat(3, 1fr); }
+  .grid-4up { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Feature band: full-width statement row that breaks up card grids */
+.feature-band {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-accent-muted);
+  border: 1px solid var(--color-accent-border);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s var(--ease-out-expo);
+}
+.feature-band:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
+
+.feature-band-inner {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+@media (min-width: 860px) {
+  .feature-band-inner { grid-template-columns: 1.1fr 1fr; gap: var(--split-gap); }
+}
+
+/* Footer */
+.footer-grid {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1000px) {
+  .footer-grid { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--space-6); }
+}
+
+.footer-col-title {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.footer-link {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color 0.2s, padding-left 0.2s;
+}
+.footer-link:hover {
+  color: var(--color-accent);
+  padding-left: 3px;
+}
+
+/* Tech badge */
 .tech-badge {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -237,12 +761,12 @@ body {
   cursor: default;
 }
 .tech-badge:hover {
-  border-color: rgba(0,200,150,0.4);
-  background: rgba(0,200,150,0.06);
+  border-color: var(--color-accent-border);
+  background: var(--color-accent-tint);
   transform: translateY(-1px);
 }
 
-/* ─── Scroll reveal ──────────────────────────────────────────── */
+/* Scroll reveal */
 .reveal {
   opacity: 0;
   transform: translateY(22px);
@@ -254,7 +778,7 @@ body {
   transform: translateY(0);
 }
 
-/* ─── Glow card ──────────────────────────────────────────────── */
+/* Glow card */
 .glow-card {
   position: relative;
   transition: transform 0.25s var(--ease-out-expo),
@@ -266,11 +790,7 @@ body {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: radial-gradient(
-    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(0,200,150,0.08),
-    transparent 60%
-  );
+  background: var(--color-accent-tint);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -279,40 +799,18 @@ body {
 .glow-card:hover::before { opacity: 1; }
 .glow-card > * { position: relative; z-index: 1; }
 
-/* ─── Shimmer skeleton ───────────────────────────────────────── */
+/* Shimmer skeleton */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-overlay) 25%,
-    rgba(0,200,150,0.06) 50%,
-    var(--color-bg-overlay) 75%
-  );
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+  background: var(--color-bg-overlay);
+  animation: shimmer 1.6s ease-in-out infinite;
 }
 
-/* ─── Nav link underline ─────────────────────────────────────── */
-.nav-link-underline {
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 1.5px;
-  background: var(--color-accent);
-  transform-origin: left;
-  animation: underlineSlide 0.25s var(--ease-out-expo) forwards;
-}
-
-/* ─── Expand animation ───────────────────────────────────────── */
-.expand-enter {
-  animation: expandHeight 0.3s var(--ease-out-expo) both;
-}
-
-/* ─── Terminal ───────────────────────────────────────────────── */
+/* Nav link underline */
+/* Terminal */
 .terminal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.88);
+  background: var(--color-scrim);
   backdrop-filter: blur(10px);
   z-index: 9998;
   display: flex;
@@ -323,19 +821,19 @@ body {
 }
 
 .terminal-window {
-  background: #0D1117;
+  background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   width: 100%;
   max-width: 680px;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,200,150,0.05);
+  box-shadow: var(--shadow-xl);
   animation: scaleIn 0.25s var(--ease-spring) both;
 }
 
 .terminal-header {
-  background: #161B22;
+  background: var(--color-chrome-bar);
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -357,7 +855,7 @@ body {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   line-height: 1.65;
-  color: #E6EDF3;
+  color: var(--color-text-primary);
   overflow-y: auto;
   max-height: calc(80vh - 48px);
 }
@@ -376,14 +874,14 @@ body {
   background: transparent;
   border: none;
   outline: none;
-  color: #E6EDF3;
+  color: var(--color-text-primary);
   font-family: var(--font-mono);
   font-size: 0.85rem;
   flex: 1;
   caret-color: var(--color-accent);
 }
 
-/* ─── Button base ────────────────────────────────────────────── */
+/* Button base */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -410,7 +908,7 @@ body {
 .btn-primary:hover {
   background: var(--color-accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0,200,150,0.25);
+  box-shadow: 0 8px 20px rgba(0,122,92,0.28);
 }
 
 .btn-ghost {
@@ -422,16 +920,16 @@ body {
   border-color: var(--color-accent);
   color: var(--color-accent);
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,200,150,0.1);
+  box-shadow: 0 4px 16px rgba(0,122,92,0.12);
 }
 
-/* ─── Social icon button ─────────────────────────────────────── */
+/* Social icon button */
 .social-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -443,11 +941,11 @@ body {
   border-color: var(--color-accent);
   color: var(--color-accent);
   transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(0,200,150,0.15);
+  box-shadow: 0 6px 20px rgba(0,122,92,0.18);
 }
 .social-btn:active { transform: scale(0.95); }
 
-/* ─── Form inputs ────────────────────────────────────────────── */
+/* Form inputs */
 .form-input {
   width: 100%;
   background: var(--color-bg-overlay);
@@ -460,8 +958,7 @@ body {
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   box-sizing: border-box;
-  /* Fix select option visibility in dark mode */
-  color-scheme: dark;
+  color-scheme: light;
 }
 .form-input option {
   background: var(--color-bg-overlay);
@@ -470,8 +967,8 @@ body {
 .form-input::placeholder { color: var(--color-text-muted); }
 .form-input:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(0,200,150,0.1);
-  background: rgba(0,200,150,0.03);
+  box-shadow: 0 0 0 3px rgba(0,122,92,0.15);
+  background: var(--color-accent-tint);
 }
 .form-input:hover:not(:focus) { border-color: var(--color-border-focus); }
 
@@ -483,11 +980,11 @@ body {
   80%       { transform: translateX(4px); }
 }
 .form-input.error {
-  border-color: #EF4444;
+  border-color: var(--color-status-error);
   animation: shake 0.4s ease;
 }
 
-/* ─── Metric card ────────────────────────────────────────────── */
+/* Metric card */
 .metric-card {
   background: var(--color-bg-overlay);
   border: 1px solid var(--color-border);
@@ -498,56 +995,256 @@ body {
   transition: border-color 0.2s, transform 0.2s var(--ease-spring);
 }
 .metric-card:hover {
-  border-color: rgba(0,200,150,0.3);
+  border-color: var(--color-accent-border);
   transform: translateY(-2px);
 }
 
-/* ─── Project image area ─────────────────────────────────────── */
-.project-img-area {
-  height: 200px;
-  background: linear-gradient(135deg, var(--color-bg-overlay) 0%, #0A1A14 100%);
+/* Project card
+   No decorative media band. The card leads with real facts about the project,
+   the category, the live domain and three concrete numbers, rather than
+   generic ornament. */
+.pcard {
+  display: flex;
+  flex-direction: column;
+  padding: var(--card-pad);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease, transform 0.25s var(--ease-out-expo),
+              box-shadow 0.25s ease;
+}
+.pcard:hover {
+  border-color: var(--color-accent-border);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Every row below is a fixed height, so all cards in a row are identical
+   regardless of whether a title runs to one line or two. Ragged rows were what
+   made a grid of these read as disordered. */
+.pcard-meta {
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  transition: background 0.3s;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 18px;
+  margin-bottom: var(--space-4);
 }
-.project-img-area::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 60%, rgba(0,200,150,0.04) 100%);
-  opacity: 0;
-  transition: opacity 0.3s;
+.pcard-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.project-card:hover .project-img-area::after { opacity: 1; }
+.pcard-status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
 
-/* ─── Experience accent line ─────────────────────────────────── */
+/* Two lines reserved whether the title needs them or not. */
+.pcard-title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  line-height: 1.25;
+  min-height: 2.5em;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+}
+
+.pcard-domain-row {
+  display: flex;
+  align-items: center;
+  min-height: 17px;
+  margin-top: 2px;
+}
+.pcard-domain {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.pcard-domain:hover { border-bottom-color: var(--color-accent-border); }
+.pcard-domain-static {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+}
+
+/* Three lines reserved, so the row of tech chips always starts at the same
+   height across every card. */
+.pcard-tagline {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  min-height: 4.8em;
+  color: var(--color-text-secondary);
+}
+
+/* One row only. Chips that do not fit are represented by the +N chip, so the
+   card cannot grow a second or third row of them. */
+.pcard-tech {
+  display: flex;
+  gap: 5px;
+  margin-top: var(--space-3);
+  min-height: 24px;
+  overflow: hidden;
+}
+
+/* Pushed to the bottom so that footers line up across a row of cards whose
+   bodies are not exactly the same height. */
+.pcard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Case study overlay
+   The breakdown opens in its own panel rather than expanding inside the grid.
+   Inline expansion stretched the card's row, left its neighbours sitting in a
+   void, and pushed the close control off screen. */
+.case-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9995;
+  background: var(--color-scrim);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  animation: fadeIn 0.2s ease both;
+}
+@media (min-width: 720px) {
+  .case-overlay {
+    align-items: center;
+    padding: var(--space-5);
+  }
+}
+
+.case-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  max-height: 92vh;
+  background: var(--color-bg-base);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  animation: caseSlideUp 0.32s var(--ease-out-expo) both;
+}
+@media (min-width: 720px) {
+  .case-panel {
+    max-height: 86vh;
+    border-radius: var(--radius-xl);
+  }
+}
+
+@keyframes caseSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.case-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--card-pad) var(--card-pad) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  flex-shrink: 0;
+}
+
+.case-body {
+  padding: var(--card-pad);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  /* Comfortable measure for prose, which a third-width card could not give. */
+}
+
+.case-block-title {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+}
+.case-block-body {
+  font-size: var(--text-sm);
+  line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+
+/* Wraps, so a project with two facts does not leave an empty grid cell. */
+.case-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.case-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--card-pad);
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+  flex-shrink: 0;
+}
+
+/* Experience accent line */
 .exp-accent {
   position: absolute;
   top: 0;
   left: 0;
   width: 3px;
   height: 0;
-  background: linear-gradient(to bottom, var(--color-accent), transparent);
+  background: var(--color-accent);
   transition: height 0.5s var(--ease-out-expo);
   border-radius: 0 0 3px 3px;
 }
 .glow-card:hover .exp-accent { height: 100%; }
 
-/* ─── Responsive nav ─────────────────────────────────────────── */
-@media (max-width: 768px) {
+/* Responsive nav: six links plus a CTA need more room than the old 768px cut */
+@media (max-width: 1180px) {
+  .navbar-hide-md { display: none !important; }
+}
+@media (max-width: 1000px) {
   .desktop-nav    { display: none !important; }
   .mobile-menu-btn { display: flex !important; }
 }
 
-/* ─── Browser Preview Modal ──────────────────────────────────── */
+/* Browser Preview Modal */
 .browser-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 9990;
-  background: rgba(0, 0, 0, 0.82);
+  background: var(--color-scrim);
   backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
@@ -559,32 +1256,32 @@ body {
 .browser-modal-window {
   display: flex;
   flex-direction: column;
-  background: #1C1C1E;
+  background: var(--color-bg-elevated);
   border-radius: 12px;
   overflow: hidden;
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.08),
-    0 40px 100px rgba(0,0,0,0.7),
-    0 0 0 0.5px rgba(0,0,0,0.5);
+    0 0 0 1px var(--color-border),
+    var(--shadow-xl);
   animation: scaleIn 0.25s var(--ease-spring) both;
-  /* Give the window a fixed height so the viewport can fill it */
-  height: 70vh;
+  /* Fixed height so the viewport can fill it, floored for short/landscape screens */
+  height: min(70vh, 760px);
   max-height: 70vh;
+  min-height: min(360px, 92vh);
 }
 
-/* ── Chrome bar ─────────────────────────────────────────────── */
+/* Chrome bar */
 .browser-chrome {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: #2C2C2E;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: var(--color-chrome-bar);
+  border-bottom: 1px solid var(--color-border);
   user-select: none;
   flex-shrink: 0;
 }
 
-/* ── Traffic lights ─────────────────────────────────────────── */
+/* Traffic lights */
 .browser-traffic-lights {
   display: flex;
   align-items: center;
@@ -624,14 +1321,14 @@ body {
   line-height: 1;
 }
 
-/* ── URL bar ────────────────────────────────────────────────── */
+/* URL bar */
 .browser-urlbar {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 7px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.07);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
   border-radius: 6px;
   padding: 5px 10px;
   min-width: 0;
@@ -640,14 +1337,14 @@ body {
 .browser-urlbar-text {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.55);
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   letter-spacing: 0.01em;
 }
 
-/* ── Controls ───────────────────────────────────────────────── */
+/* Controls */
 .browser-controls {
   display: flex;
   align-items: center;
@@ -664,14 +1361,14 @@ body {
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: rgba(255,255,255,0.45);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
   text-decoration: none;
 }
 .browser-ctrl-btn:hover {
-  background: rgba(255,255,255,0.08);
-  color: rgba(255,255,255,0.85);
+  background: rgba(20,22,28,0.06);
+  color: var(--color-text-primary);
 }
 
 .browser-view-btn {
@@ -683,20 +1380,20 @@ body {
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: rgba(255,255,255,0.35);
+  color: var(--color-text-muted);
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
 }
-.browser-view-btn:hover  { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7); }
-.browser-view-btn.active { background: rgba(0,200,150,0.15); color: var(--color-accent); }
+.browser-view-btn:hover  { background: rgba(20,22,28,0.06); color: var(--color-text-primary); }
+.browser-view-btn.active { background: var(--color-accent-muted); color: var(--color-accent); }
 
-.browser-close-btn:hover { background: rgba(255,95,87,0.2) !important; color: #FF5F57 !important; }
+.browser-close-btn:hover { background: rgba(220,38,38,0.12) !important; color: var(--color-status-error) !important; }
 
-/* ── Viewport ───────────────────────────────────────────────── */
+/* Viewport */
 .browser-viewport {
   flex: 1;           /* fills all remaining height inside the window */
-  min-height: 0;     /* critical — lets flex children shrink below content size */
-  background: #1a1a1a;
+  min-height: 0;     /* critical: lets flex children shrink below content size */
+  background: var(--color-bg-overlay);
   overflow: hidden;
   position: relative;
   display: flex;
@@ -704,19 +1401,19 @@ body {
   justify-content: center;
 }
 
-/* ── Mobile device frame (iPhone-style) ─────────────────────── */
+/* Mobile device frame (iPhone-style) */
 .mobile-frame-outer {
   width: 300px;
   height: calc(100% - 32px);
   max-height: 600px;
   min-height: 480px;
-  background: #1A1A1A;
+  background: var(--color-device-bezel);
   border-radius: 44px;
   padding: 14px 10px;
   box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.12),
-    0 0 0 2px #0A0A0A,
-    0 20px 60px rgba(0,0,0,0.5);
+    inset 0 0 0 1px rgba(255,255,255,0.5),
+    0 0 0 2px var(--color-border-focus),
+    var(--shadow-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -727,14 +1424,14 @@ body {
 .mobile-notch {
   width: 100px;
   height: 28px;
-  background: #1A1A1A;
+  background: var(--color-device-bezel);
   border-radius: 0 0 18px 18px;
   position: absolute;
   top: 14px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3);
+  box-shadow: inset 0 -2px 4px rgba(20,22,28,0.15);
 }
 
 .mobile-iframe-wrap {
@@ -750,20 +1447,20 @@ body {
 .mobile-home-bar {
   width: 100px;
   height: 4px;
-  background: rgba(255,255,255,0.25);
+  background: rgba(20,22,28,0.3);
   border-radius: 2px;
   margin-top: 10px;
   flex-shrink: 0;
 }
 
-/* ── Spin once animation for reload ─────────────────────────── */
+/* Spin once animation for reload */
 @keyframes spin-once {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 .spin-once { animation: spin-once 0.5s ease both; }
 
-/* ── Responsive: hide mobile frame on small screens ─────────── */
+/* Responsive: hide mobile frame on small screens */
 @media (max-width: 480px) {
   .browser-modal-window { width: 100% !important; border-radius: 8px; }
   .mobile-frame-outer   { width: 280px; }

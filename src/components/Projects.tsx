@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
-import { ExternalLink, ArrowRight, ChevronDown, ChevronUp, Monitor } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { ArrowRight, ExternalLink, Monitor } from 'lucide-react'
 import { projects } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
 import BrowserPreviewModal, { NoPreviewModal } from './BrowserPreviewModal'
+import CaseStudyModal from './CaseStudyModal'
 
 const GithubIcon = ({ size = 14 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -11,341 +12,186 @@ const GithubIcon = ({ size = 14 }: { size?: number }) => (
 )
 
 const statusConfig = {
-  live:          { label: 'Live',        color: '#22C55E', bg: 'rgba(34,197,94,0.1)' },
-  'in-progress': { label: 'In Progress', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-  archived:      { label: 'Archived',    color: '#606078', bg: 'rgba(96,96,120,0.1)' },
+  live:          { label: 'Live',        color: 'var(--color-status-live)' },
+  'in-progress': { label: 'In progress', color: 'var(--color-status-wip)' },
+  archived:      { label: 'Archived',    color: 'var(--color-text-muted)' },
 }
 
-// ── Code rain canvas ──────────────────────────────────────────
-function CodeCanvas({ hovered }: { hovered: boolean }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const rafRef    = useRef<number>(0)
+type ModalKind = null | 'case' | 'preview'
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    canvas.width  = canvas.offsetWidth
-    canvas.height = canvas.offsetHeight
-
-    const snippets = ['const', '=>', 'async', 'await', 'return', '{}', '[]', 'fn()', '.map', '.then', 'type', 'interface']
-    const cols  = Math.floor(canvas.width / 48)
-    const drops = Array.from({ length: cols }, () => Math.random() * -20)
-
-    const draw = () => {
-      ctx.fillStyle = 'rgba(10,10,15,0.18)'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.font = '11px JetBrains Mono, monospace'
-      drops.forEach((y, i) => {
-        const text  = snippets[Math.floor(Math.random() * snippets.length)]
-        const alpha = hovered ? 0.18 : 0.07
-        ctx.fillStyle = `rgba(0,200,150,${alpha})`
-        ctx.fillText(text, i * 48, y * 14)
-        drops[i] = y > canvas.height / 14 + 5 ? 0 : y + 0.4
-      })
-      rafRef.current = requestAnimationFrame(draw)
-    }
-
-    draw()
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [hovered])
-
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      style={{
-        position: 'absolute', inset: 0, width: '100%', height: '100%',
-        opacity: hovered ? 1 : 0.6,
-        transition: 'opacity 0.4s',
-      }}
-    />
-  )
-}
-
-// ── Animated metric value ─────────────────────────────────────
-function MetricValue({ value }: { value: string }) {
-  const num    = parseInt(value.replace(/\D/g, ''), 10)
-  const suffix = value.replace(/[\d]/g, '')
-  const [display, setDisplay] = useState(0)
-  const started = useRef(false)
-  const { ref, visible } = useReveal()
-
-  useEffect(() => {
-    if (!visible || started.current || isNaN(num)) return
-    started.current = true
-    const duration = 1000
-    const start = performance.now()
-    const tick = (now: number) => {
-      const p     = Math.min((now - start) / duration, 1)
-      const eased = 1 - Math.pow(1 - p, 3)
-      setDisplay(Math.round(eased * num))
-      if (p < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [visible, num])
-
-  return (
-    <div ref={ref} style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-accent)' }}>
-      {isNaN(num) ? value : `${display}${suffix}`}
-    </div>
-  )
-}
-
-// ── Project card ──────────────────────────────────────────────
 function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
-  const [expanded,    setExpanded]    = useState(false)
-  const [hovered,     setHovered]     = useState(false)
-  const [previewOpen, setPreviewOpen] = useState(false)
+  const [modal, setModal] = useState<ModalKind>(null)
   const { ref, visible } = useReveal()
+  const caseTriggerRef = useRef<HTMLButtonElement>(null)
   const status = statusConfig[project.status]
+
+  // Returning focus to the button that opened the dialog keeps keyboard users
+  // where they were in the grid.
+  const closeModal = () => {
+    setModal(null)
+    caseTriggerRef.current?.focus()
+  }
 
   return (
     <>
       <article
         ref={ref}
-        className={`reveal glow-card project-card ${visible ? 'visible' : ''}`}
-        style={{
-          background: 'var(--color-bg-elevated)',
-          border: `1px solid ${hovered ? 'var(--color-accent)' : 'var(--color-border)'}`,
-          borderRadius: 'var(--radius-xl)',
-          overflow: 'hidden',
-          transitionDelay: `${index * 80}ms`,
-          transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
-          boxShadow: hovered ? '0 12px 48px rgba(0,200,150,0.1)' : 'none',
-        }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
+        className={`reveal pcard ${visible ? 'visible' : ''}`}
+        style={{ transitionDelay: `${index * 70}ms` }}
+        aria-labelledby={`pcard-title-${project.id}`}
       >
-        {/* Image area */}
-        <div className="project-img-area" style={{ height: '200px', position: 'relative', overflow: 'hidden' }}>
-          <CodeCanvas hovered={hovered} />
-          <div
-            style={{
-              position: 'relative', zIndex: 1,
-              fontFamily: 'var(--font-mono)', fontSize: '2.5rem',
-              color: 'var(--color-accent)',
-              opacity: hovered ? 0.3 : 0.12,
-              userSelect: 'none', transition: 'opacity 0.3s',
-            }}
-            aria-hidden="true"
-          >{'{ }'}</div>
-
-          {/* Badges */}
-          <div style={{ position: 'absolute', top: '12px', left: '12px', right: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 }}>
-            <span className="section-label" style={{ fontSize: '0.6rem' }}>{project.category}</span>
-            <span style={{
-              fontSize: '0.6rem', fontFamily: 'var(--font-mono)', fontWeight: 500,
-              color: status.color, background: status.bg,
-              padding: '2px 9px', borderRadius: 'var(--radius-full)',
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-            }}>{status.label}</span>
-          </div>
-
-          {/* Preview hover overlay */}
-          <div
-            onClick={() => setPreviewOpen(true)}
-            style={{
-              position: 'absolute', inset: 0, zIndex: 3,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'rgba(0,0,0,0.55)',
-              opacity: hovered ? 1 : 0,
-              transition: 'opacity 0.25s',
-              cursor: 'pointer',
-              backdropFilter: 'blur(2px)',
-            }}
-            role="button"
-            aria-label={`Preview ${project.title}`}
-          >
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: 'rgba(0,200,150,0.15)',
-              border: '1px solid rgba(0,200,150,0.4)',
-              borderRadius: 'var(--radius-full)',
-              padding: '8px 18px',
-              color: 'var(--color-accent)',
-              fontFamily: 'var(--font-body)',
-              fontWeight: 600,
-              fontSize: 'var(--text-sm)',
-              backdropFilter: 'blur(8px)',
-              transition: 'background 0.2s, transform 0.2s',
-            }}>
-              <Monitor size={15} />
-              Preview
-            </div>
-          </div>
+        <div className="pcard-meta">
+          <span className="section-label" style={{ fontSize: '0.58rem' }}>
+            {project.category}
+          </span>
+          {/* Status is carried by the text, not only the dot colour. */}
+          <span className="pcard-status" style={{ color: status.color }}>
+            <span
+              className="pcard-status-dot"
+              style={{ background: status.color }}
+              aria-hidden="true"
+            />
+            {status.label}
+          </span>
         </div>
 
-        <div style={{ padding: '1.5rem' }}>
-          <h3 style={{
-            fontFamily: 'var(--font-display)', fontSize: 'var(--text-xl)', fontWeight: 700,
-            color: 'var(--color-text-primary)', marginBottom: '0.5rem', lineHeight: 1.3,
-          }}>{project.title}</h3>
+        <h3 id={`pcard-title-${project.id}`} className="pcard-title line-clamp-2">
+          {project.title}
+        </h3>
 
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.6 }}>
-            {project.tagline}
-          </p>
+        <div className="pcard-domain-row">
+          {project.liveUrl ? (
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pcard-domain"
+              aria-label={`Open ${project.title} at ${project.liveUrl.replace(/^https?:\/\//, '')} in a new tab`}
+            >
+              {project.liveUrl.replace(/^https?:\/\//, '')}
+              <ExternalLink size={10} aria-hidden="true" />
+            </a>
+          ) : (
+            <span className="pcard-domain-static">Private deployment</span>
+          )}
+        </div>
 
-          {/* Tech stack */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '1.25rem' }}>
-            {project.tech.slice(0, 4).map((t) => (
-              <span key={t} className="tech-badge">{t}</span>
-            ))}
-            {project.tech.length > 4 && (
-              <span className="tech-badge" style={{ color: 'var(--color-text-muted)' }}>+{project.tech.length - 4}</span>
-            )}
-          </div>
+        <p className="pcard-tagline line-clamp-3">{project.tagline}</p>
 
-          {/* Expand toggle */}
+        {/* Two chips plus a counter always fits one row, even at the narrowest
+            card width. The full stack is listed in the case study. */}
+        <div className="pcard-tech">
+          {project.tech.slice(0, 2).map((t) => (
+            <span key={t} className="tech-badge">{t}</span>
+          ))}
+          {project.tech.length > 2 && (
+            <span
+              className="tech-badge"
+              style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}
+              title={project.tech.slice(2).join(', ')}
+            >
+              +{project.tech.length - 2} more
+            </span>
+          )}
+        </div>
+
+        <div className="pcard-foot">
           <button
-            onClick={() => setExpanded(!expanded)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '6px',
-              background: 'none', border: 'none',
-              color: 'var(--color-accent)', fontFamily: 'var(--font-body)',
-              fontSize: 'var(--text-sm)', fontWeight: 500, cursor: 'pointer',
-              padding: '2px 0', marginBottom: expanded ? '1rem' : 0,
-              transition: 'gap 0.2s',
-            }}
-            aria-expanded={expanded}
-            onMouseEnter={(e) => { e.currentTarget.style.gap = '10px' }}
-            onMouseLeave={(e) => { e.currentTarget.style.gap = '6px' }}
+            ref={caseTriggerRef}
+            onClick={() => setModal('case')}
+            className="card-cta"
+            aria-label={`Read the ${project.title} case study`}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: 0, paddingTop: 0 }}
           >
-            {expanded ? 'Hide details' : 'View case study'}
-            {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            Read case study
+            <ArrowRight size={13} aria-hidden="true" />
           </button>
 
-          {/* Case study */}
-          {expanded && (
-            <div className="expand-enter" style={{ borderTop: '1px solid var(--color-border)', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Problem</div>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.problem}</p>
-              </div>
-              <div>
-                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Solution</div>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>{project.solution}</p>
-              </div>
-              <div>
-                <div className="section-label" style={{ marginBottom: '6px', fontSize: '0.6rem' }}>Key Challenge</div>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 1.65 }}>
-                  <strong style={{ color: 'var(--color-text-primary)' }}>{project.challenges[0].problem}:</strong>{' '}
-                  {project.challenges[0].solution}
-                </p>
-              </div>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-                {project.metrics.map((m) => (
-                  <div key={m.label} className="metric-card">
-                    <MetricValue value={m.value} />
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-muted)', marginTop: '2px' }}>{m.label}</div>
-                  </div>
-                ))}
-              </div>
-              <blockquote
-                style={{ borderLeft: '2px solid var(--color-border)', paddingLeft: '12px', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', fontStyle: 'italic', lineHeight: 1.65, transition: 'border-color 0.2s' }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-accent)' }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border)' }}
-              >
-                "{project.reflection}"
-              </blockquote>
-            </div>
-          )}
-
-          {/* Action row */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.25rem', paddingTop: '1.25rem', borderTop: '1px solid var(--color-border)', flexWrap: 'wrap' }}>
-            {/* Preview button — always shown */}
+          <div style={{ display: 'flex', gap: '6px', flexShrink: 0 }}>
             <button
-              onClick={() => setPreviewOpen(true)}
-              className="btn btn-primary"
-              style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
+              onClick={() => setModal('preview')}
+              className="icon-btn"
+              aria-label={`Preview ${project.title}`}
+              title="Preview"
             >
-              <Monitor size={13} />
-              Preview
+              <Monitor size={14} aria-hidden="true" />
             </button>
-
-            {/* External link — only when live */}
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-ghost"
-                style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
-              >
-                <ExternalLink size={13} />
-                Open site
-              </a>
-            )}
 
             {project.githubUrl && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-ghost"
-                style={{ padding: '8px 16px', fontSize: 'var(--text-sm)' }}
+                className="icon-btn"
+                aria-label={`View ${project.title} source code on GitHub`}
+                title="View source"
               >
-                <GithubIcon size={14} /> Code
+                <GithubIcon size={14} />
               </a>
             )}
           </div>
         </div>
       </article>
 
-      {/* Modal */}
-      {previewOpen && (
+      {modal === 'case' && (
+        <CaseStudyModal
+          project={project}
+          onOpenPreview={() => setModal('preview')}
+          onClose={closeModal}
+        />
+      )}
+
+      {modal === 'preview' && (
         project.liveUrl
           ? <BrowserPreviewModal
               url={project.liveUrl}
               title={project.title}
               staticScreenshot={project.screenshot}
-              onClose={() => setPreviewOpen(false)}
+              onClose={closeModal}
             />
           : <NoPreviewModal
               title={project.title}
-              reason="This project is deployed in a private environment and isn't publicly accessible yet. The case study above covers the architecture, decisions, and outcomes in detail."
-              onClose={() => setPreviewOpen(false)}
+              reason="This project runs in a private environment and isn't publicly accessible. The case study covers the architecture, the decisions, and what came out of it."
+              onClose={closeModal}
             />
       )}
     </>
   )
 }
 
-// ── Section ───────────────────────────────────────────────────
 export default function Projects() {
   const { ref: headRef, visible: headVisible } = useReveal()
 
   return (
-    <section id="projects" style={{ padding: '6rem 1.5rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <div ref={headRef} className={`reveal ${headVisible ? 'visible' : ''}`} style={{ marginBottom: '3rem' }}>
-        <div className="section-label" style={{ marginBottom: '0.75rem' }}>Selected Work</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-4xl)', fontWeight: 900, color: 'var(--color-text-primary)', lineHeight: 1.1, letterSpacing: '-0.02em', marginBottom: '1rem' }}>
-          Things I've built
-        </h2>
-        <p style={{ fontSize: 'var(--text-lg)', color: 'var(--color-text-secondary)', maxWidth: '520px', lineHeight: 1.6 }}>
-          Each project is a case study — hover the card to preview, or expand for the full breakdown.
-        </p>
-      </div>
+    <section id="projects" className="section">
+      <div className="section-inner">
+        <div ref={headRef} className={`reveal section-head ${headVisible ? 'visible' : ''}`}>
+          <div className="section-label">Selected Work</div>
+          <h2 className="section-title">Things I've built</h2>
+          <p className="section-lede">
+            Seven platforms running in production. Open any case study for the
+            problem it solved, the hardest part of building it, and what shipped.
+          </p>
+        </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1.5rem' }}>
-        {projects.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} />
-        ))}
-      </div>
+        <div className="grid-3up">
+          {projects.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
+          ))}
+        </div>
 
-      <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-        <a
-          href="https://github.com/bosco250"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', textDecoration: 'none', transition: 'color 0.2s, gap 0.2s' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.gap = '12px' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.gap = '8px' }}
-        >
-          More on GitHub <ArrowRight size={14} />
-        </a>
+        <div style={{ marginTop: 'var(--head-gap)', textAlign: 'center' }}>
+          <a
+            href="https://github.com/bosco250"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', textDecoration: 'none', transition: 'color 0.2s, gap 0.2s' }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-accent)'; e.currentTarget.style.gap = '12px' }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.gap = '8px' }}
+          >
+            More on GitHub <ArrowRight size={14} />
+          </a>
+        </div>
       </div>
     </section>
   )

@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Download, MapPin, GraduationCap, Award } from 'lucide-react'
+import { MapPin, GraduationCap, Award } from 'lucide-react'
+import DownloadCv from './DownloadCv'
 import { personal, achievement } from '../data/portfolio'
 import { useReveal } from '../hooks/useReveal'
 
@@ -8,32 +9,16 @@ export default function About() {
   const { ref: ref2, visible: visible2 } = useReveal()
 
   return (
-    <section
-      id="about"
-      style={{
-        padding: '6rem 1.5rem',
-        background: 'var(--color-bg-elevated)',
-        borderTop: '1px solid var(--color-border)',
-        borderBottom: '1px solid var(--color-border)',
-      }}
-    >
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'start' }}>
+    <section id="about" className="section section-band">
+      <div className="section-inner">
+        <div className="grid-split">
 
           {/* Left */}
           <div ref={ref} className={`reveal ${visible ? 'visible' : ''}`}>
-            <div className="section-label" style={{ marginBottom: '0.75rem' }}>About</div>
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'var(--text-4xl)',
-              fontWeight: 900,
-              color: 'var(--color-text-primary)',
-              lineHeight: 1.1,
-              letterSpacing: '-0.02em',
-              marginBottom: '2rem',
-            }}>
+            <div className="section-label">About</div>
+            <h2 className="section-title" style={{ marginBottom: 'var(--space-6)' }}>
               The person<br />
-              <span className="gradient-text">behind the code</span>
+              <span className="accent-text">behind the code</span>
             </h2>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -45,7 +30,7 @@ export default function About() {
             </div>
 
             {/* Meta */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid var(--color-border)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: 'var(--space-5)', paddingTop: 'var(--space-5)', borderTop: '1px solid var(--color-border)' }}>
               {[
                 { icon: <MapPin size={15} />, text: `${personal.location} · UTC+2 · Comfortable with remote teams across Europe & Africa` },
                 { icon: <GraduationCap size={15} />, text: personal.education },
@@ -63,16 +48,10 @@ export default function About() {
               ))}
             </div>
 
-            {/* Resume */}
-            <a
-              href="/resume/jean-bosco-resume-2026.pdf"
-              download
+            <DownloadCv
               className="btn btn-ghost"
-              style={{ marginTop: '2rem', padding: '12px 24px', fontSize: 'var(--text-sm)' }}
-            >
-              <Download size={15} />
-              Download Resume
-            </a>
+              style={{ marginTop: 'var(--space-5)', padding: '11px 22px', fontSize: 'var(--text-sm)' }}
+            />
           </div>
 
           {/* Right */}
@@ -132,11 +111,11 @@ function InfoCard({ title, children, accent = false }: { title: string; children
       onMouseLeave={() => setHovered(false)}
       style={{
         background: accent ? 'var(--color-accent-muted)' : 'var(--color-bg-base)',
-        border: `1px solid ${hovered ? (accent ? 'rgba(0,200,150,0.35)' : 'var(--color-border-focus)') : (accent ? 'rgba(0,200,150,0.2)' : 'var(--color-border)')}`,
+        border: `1px solid ${hovered ? (accent ? 'var(--color-accent-strong)' : 'var(--color-border-focus)') : (accent ? 'var(--color-accent-border)' : 'var(--color-border)')}`,
         borderRadius: 'var(--radius-xl)',
-        padding: '1.5rem',
+        padding: 'var(--card-pad)',
         transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
-        boxShadow: hovered ? '0 6px 24px rgba(0,0,0,0.2)' : 'none',
+        boxShadow: hovered ? 'var(--shadow-md)' : 'var(--shadow-sm)',
       }}
     >
       <div className="section-label" style={{ marginBottom: '1rem', fontSize: '0.6rem' }}>{title}</div>

@@ -46,3 +46,6 @@ coverage/
 # ── Misc ──────────────────────────────────────────────────────
 *.pem
 .cache/
+
+# CV verification scratch output
+tmp/

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { Mail, MapPin, Menu, X } from 'lucide-react'
 import { personal } from '../data/portfolio'
+import DownloadCv, { DownloadCvLink } from './DownloadCv'
 
 const navLinks = [
   { label: 'Work',       href: '#projects' },
+  { label: 'Capabilities', href: '#capabilities' },
   { label: 'About',      href: '#about' },
   { label: 'Skills',     href: '#skills' },
   { label: 'Experience', href: '#experience' },
@@ -14,7 +16,6 @@ export default function Navbar() {
   const [scrolled,      setScrolled]      = useState(false)
   const [menuOpen,      setMenuOpen]       = useState(false)
   const [activeSection, setActiveSection]  = useState('')
-  const [hoveredLink,   setHoveredLink]    = useState<string | null>(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60)
@@ -47,201 +48,137 @@ export default function Navbar() {
 
       <header
         role="banner"
+        className={scrolled ? 'navbar-scrolled' : ''}
         style={{
           position: 'fixed',
           top: 0, left: 0, right: 0,
           zIndex: 100,
-          transition: 'background 0.35s ease, border-color 0.35s ease',
-          background: scrolled ? 'rgba(10,10,15,0.85)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(24px) saturate(1.5)' : 'none',
-          borderBottom: `1px solid ${scrolled ? 'var(--color-border)' : 'transparent'}`,
+          transition: 'background 0.35s ease',
+          background: scrolled ? 'rgba(250,250,248,0.88)' : 'var(--color-bg-base)',
+          backdropFilter: scrolled ? 'blur(20px) saturate(1.4)' : 'none',
         }}
       >
-        <nav
+        {/* Tier 1: dark utility strip */}
+        <div
+          className="topbar"
           style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '0 1.5rem',
-            height: '68px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            maxHeight: scrolled ? 0 : '34px',
+            overflow: 'hidden',
+            transition: 'max-height 0.35s var(--ease-out-expo)',
           }}
-          aria-label="Main navigation"
         >
-          {/* ── Logo: name + role ─────────────────────────── */}
-          <a
-            href="#"
-            aria-label="Jean Bosco Dusengimana — home"
-            style={{
-              textDecoration: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1px',
-              transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8' }}
-            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1' }}
-          >
-            <span
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontWeight: 900,
-                fontSize: '1.1rem',
-                color: 'var(--color-text-primary)',
-                letterSpacing: '-0.02em',
-                lineHeight: 1,
-              }}
-            >
-              Jean Bosco
-              <span style={{ color: 'var(--color-accent)' }}>.</span>
-            </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.6rem',
-                color: 'var(--color-text-muted)',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                lineHeight: 1,
-              }}
-            >
-              Full-Stack Developer
-            </span>
-          </a>
+          <div className="topbar-inner">
+            <div className="topbar-group">
+              {personal.isAvailable && (
+                <span className="topbar-link-active">
+                  <span
+                    className="animate-pulse-dot"
+                    style={{
+                      width: '5px',
+                      height: '5px',
+                      background: 'var(--color-accent-on-dark)',
+                      display: 'inline-block',
+                      flexShrink: 0,
+                    }}
+                  />
+                  {personal.availabilityText}
+                </span>
+              )}
+              <span className="topbar-hide-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'rgba(255,255,255,0.7)' }}>
+                <MapPin size={10} />
+                {personal.location}
+              </span>
+              <span className="topbar-hide-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                {personal.timezone}
+              </span>
+            </div>
 
-          {/* ── Desktop nav ───────────────────────────────── */}
-          <div
-            className="desktop-nav"
-            style={{ display: 'flex', alignItems: 'center', gap: '1.75rem' }}
-          >
-            {navLinks.map(({ label, href }) => {
-              const isActive  = activeSection === href.slice(1)
-              const isHovered = hoveredLink === href
+            <div className="topbar-group">
+              <a href={`mailto:${personal.email}`} className="topbar-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                <Mail size={10} />
+                <span className="topbar-hide-sm">{personal.email}</span>
+              </a>
+              <a href={personal.github} target="_blank" rel="noopener noreferrer" className="topbar-link topbar-hide-sm">
+                GitHub
+              </a>
+              <a href={personal.linkedin} target="_blank" rel="noopener noreferrer" className="topbar-link topbar-hide-sm">
+                LinkedIn
+              </a>
+              <DownloadCvLink className="topbar-link" compact />
+            </div>
+          </div>
+        </div>
 
-              return (
-                <a
-                  key={href}
-                  href={href}
-                  onMouseEnter={() => setHoveredLink(href)}
-                  onMouseLeave={() => setHoveredLink(null)}
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: 'var(--text-sm)',
-                    fontWeight: 500,
-                    color: isActive || isHovered
-                      ? 'var(--color-text-primary)'
-                      : 'var(--color-text-secondary)',
-                    textDecoration: 'none',
-                    position: 'relative',
-                    paddingBottom: '3px',
-                    transition: 'color 0.2s',
-                  }}
-                >
-                  {label}
-                  {(isActive || isHovered) && (
-                    <span
-                      className="nav-link-underline"
-                      style={{
-                        background: isActive
-                          ? 'var(--color-accent)'
-                          : 'rgba(240,240,248,0.35)',
-                      }}
-                    />
-                  )}
-                </a>
-              )
-            })}
+        {/* Tier 2: floating accent nav bar */}
+        <div className="navbar-shell">
+          <nav className="navbar-bar" aria-label="Main navigation">
+            <a href="#" className="logo-pill" aria-label="Jean Bosco Dusengimana, home">
+              {personal.initials}
+            </a>
 
-            {/* Availability */}
-            {personal.isAvailable && (
-              <span
-                title={personal.availabilityText}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  background: 'var(--color-accent-muted)',
-                  border: '1px solid rgba(0,200,150,0.2)',
-                  borderRadius: 'var(--radius-full)',
-                  padding: '3px 10px 3px 7px',
-                  cursor: 'default',
-                }}
-              >
-                <span
-                  className="animate-pulse-dot"
-                  style={{
-                    width: '6px',
-                    height: '6px',
-                    background: 'var(--color-accent)',
-                    display: 'inline-block',
-                    flexShrink: 0,
-                  }}
-                />
-                <span style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.65rem',
-                  color: 'var(--color-accent)',
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'nowrap',
-                }}>
+            <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
+              {navLinks.map(({ label, href }) => {
+                const isActive = activeSection === href.slice(1)
+                return (
+                  <a
+                    key={href}
+                    href={href}
+                    className={`navbar-link ${isActive ? 'navbar-link-active' : ''}`}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {label}
+                  </a>
+                )
+              })}
+            </div>
+
+            <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginLeft: 'auto' }}>
+              {personal.isAvailable && (
+                <span className="navbar-pill navbar-hide-md" title={personal.availabilityText}>
+                  <span
+                    className="animate-pulse-dot"
+                    style={{ width: '6px', height: '6px', background: '#FFFFFF', display: 'inline-block', flexShrink: 0 }}
+                  />
                   Open to work
                 </span>
-              </span>
-            )}
+              )}
 
-            {/* CTA */}
-            <a
-              href="#contact"
-              className="btn btn-primary"
-              style={{ padding: '8px 20px', fontSize: 'var(--text-sm)' }}
+              <a href="#contact" className="navbar-cta">Hire me</a>
+            </div>
+
+            <button
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="navbar-burger mobile-menu-btn"
             >
-              Hire me
-            </a>
-          </div>
-
-          {/* ── Mobile menu button ────────────────────────── */}
-          <button
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="mobile-menu-btn"
-            style={{
-              display: 'none',
-              background: 'none',
-              border: 'none',
-              color: 'var(--color-text-primary)',
-              cursor: 'pointer',
-              padding: '6px',
-              borderRadius: 'var(--radius-sm)',
-              transition: 'background 0.2s',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-bg-overlay)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'none' }}
-          >
-            {menuOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
-        </nav>
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </nav>
+        </div>
       </header>
 
-      {/* ── Mobile overlay ────────────────────────────────── */}
+      {/* Mobile overlay */}
       {menuOpen && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
             zIndex: 99,
-            background: 'rgba(10,10,15,0.97)',
+            background: 'rgba(250,250,248,0.97)',
             backdropFilter: 'blur(20px)',
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
-            padding: '2rem',
+            padding: 'clamp(5rem, 14vw, 6rem) var(--card-pad-lg) var(--card-pad-lg)',
+            /* Six links plus the CTA can exceed a short phone viewport, so the
+               panel scrolls rather than clipping its ends. */
+            overflowY: 'auto',
             animation: 'fadeIn 0.2s ease both',
           }}
         >
           {/* Mobile logo */}
-          <div style={{ marginBottom: '2.5rem' }}>
+          <div style={{ marginBottom: 'var(--space-6)' }}>
             <div style={{
               fontFamily: 'var(--font-display)',
               fontWeight: 900,
@@ -272,11 +209,11 @@ export default function Navbar() {
                 onClick={() => setMenuOpen(false)}
                 style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: 'var(--text-2xl)',
+                  fontSize: 'var(--text-xl)',
                   fontWeight: 600,
                   color: 'var(--color-text-secondary)',
                   textDecoration: 'none',
-                  padding: '0.875rem 0',
+                  padding: '0.75rem 0',
                   borderBottom: '1px solid var(--color-border)',
                   transition: 'color 0.2s, padding-left 0.25s var(--ease-out-expo)',
                   animation: `fadeUp 0.35s var(--ease-out-expo) ${i * 45}ms both`,
@@ -301,7 +238,7 @@ export default function Navbar() {
 
           {/* Mobile CTA */}
           <div style={{
-            marginTop: '2rem',
+            marginTop: 'var(--space-5)',
             display: 'flex',
             flexDirection: 'column',
             gap: '0.75rem',
@@ -315,6 +252,10 @@ export default function Navbar() {
             >
               Hire me
             </a>
+            <DownloadCv
+              className="btn btn-ghost"
+              style={{ justifyContent: 'center', padding: '13px 28px', fontSize: 'var(--text-base)' }}
+            />
             {personal.isAvailable && (
               <div style={{
                 display: 'flex',

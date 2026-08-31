@@ -10,20 +10,20 @@ interface Line {
 const COMMANDS: Record<string, () => string[]> = {
   help: () => [
     'Available commands:',
-    '  help       — show this list',
-    '  whoami     — about Jean Bosco',
-    '  skills     — technical skills',
-    '  projects   — list projects',
-    '  contact    — contact info',
-    '  joke       — developer humor',
-    '  clear      — clear terminal',
-    '  exit       — close terminal',
+    '  help       show this list',
+    '  whoami     about Jean Bosco',
+    '  skills     technical skills',
+    '  projects   list projects',
+    '  contact    contact info',
+    '  joke       developer humor',
+    '  clear      clear terminal',
+    '  exit       close terminal',
   ],
   whoami: () => [
     'Jean Bosco Dusengimana',
     'Full-Stack Software Developer · Kigali, Rwanda',
     '',
-    'I build production systems — multi-platform SaaS, enterprise procurement',
+    'I build production systems: multi-platform SaaS, enterprise procurement',
     'tools, and client-facing web apps. Currently at Uruti Hub Limited.',
     '',
     `Status: ${personal.isAvailable ? '✅ Open to opportunities' : '🔴 Currently booked'}`,
@@ -199,7 +199,7 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
                   line.type === 'prompt'
                     ? 'var(--color-accent)'
                     : line.type === 'error'
-                    ? '#EF4444'
+                    ? 'var(--color-status-error)'
                     : 'var(--color-text-secondary)',
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
