@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { ArrowDown, ArrowRight } from 'lucide-react'
 import { experience, projects } from '../data/portfolio'
 import { useMousePosition } from '../hooks/useMousePosition'
 
 export default function Hero() {
-  const canvasRef  = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const mouse      = useMousePosition()
 
@@ -19,41 +18,8 @@ export default function Hero() {
   }
 
   const p1 = getParallax(28)
-  const p2 = getParallax(16)
-  const p3 = getParallax(10)
+  const p2 = getParallax(14)
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-
-    const draw = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      const size = 64
-      ctx.strokeStyle = 'rgba(20,22,28,0.045)'
-      ctx.lineWidth = 1
-      for (let x = 0; x < canvas.width + size; x += size) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke()
-      }
-      for (let y = 0; y < canvas.height + size; y += size) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke()
-      }
-    }
-
-    const resize = () => {
-      canvas.width = canvas.offsetWidth
-      canvas.height = canvas.offsetHeight
-      draw()
-    }
-
-    resize()
-    window.addEventListener('resize', resize)
-    return () => window.removeEventListener('resize', resize)
-  }, [])
-
-  // Stats derived from real data
   const stats = [
     { value: `${new Date().getFullYear() - 2024}+`, label: 'years building' },
     { value: `${projects.length}`, label: 'production platforms' },
@@ -66,49 +32,50 @@ export default function Hero() {
       id="hero"
       style={{
         position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
         overflow: 'hidden',
         background: 'var(--color-bg-base)',
       }}
     >
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
-      />
-
-      {/* Parallax blobs */}
+      {/* Soft ambient blobs — no grid, no hard gradients */}
       <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
-        {([
-          { style: { top: '18%', left: '8%' },    size: 340, ...p1, color: 'rgba(0,122,92,0.10)', blur: 90 },
-          { style: { top: '48%', right: '6%' },   size: 300, ...p2, color: 'rgba(0,122,92,0.08)', blur: 100 },
-          { style: { bottom: '12%', left: '38%' }, size: 220, ...p3, color: 'rgba(0,122,92,0.06)', blur: 70 },
-        ] as const).map((b, i) => (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              ...b.style,
-              width: `${b.size}px`, height: `${b.size}px`,
-              borderRadius: '50%',
-              background: b.color,
-              transform: `translate(${b.x}px, ${b.y}px)`,
-              transition: `transform ${0.8 + i * 0.2}s cubic-bezier(0.25,0.46,0.45,0.94)`,
-              filter: `blur(${b.blur}px)`,
-            }}
-          />
-        ))}
+        <div
+          style={{
+            position: 'absolute',
+            top: '10%',
+            right: '-5%',
+            width: '420px',
+            height: '420px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0,122,92,0.09) 0%, transparent 70%)',
+            transform: `translate(${p1.x}px, ${p1.y}px)`,
+            transition: 'transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '10%',
+            left: '-8%',
+            width: '360px',
+            height: '360px',
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0,122,92,0.07) 0%, transparent 70%)',
+            transform: `translate(${p2.x}px, ${p2.y}px)`,
+            transition: 'transform 1.1s cubic-bezier(0.25,0.46,0.45,0.94)',
+          }}
+        />
       </div>
 
+      {/* Content — padding-top ensures clearance below fixed header on all screens */}
       <div
+        className="hero-content-inner"
         style={{
           position: 'relative',
           maxWidth: 'var(--container)',
           margin: '0 auto',
-          padding: 'clamp(5.5rem, 9.5vw, 7rem) var(--gutter) clamp(2rem, 4.5vw, 3rem)',
           width: '100%',
+          padding: 'clamp(9rem, 18vw, 10.5rem) var(--gutter) clamp(3rem, 6vw, 4rem)',
+          boxSizing: 'border-box',
         }}
       >
         {/* Name */}
@@ -117,10 +84,10 @@ export default function Hero() {
           style={{
             animationDelay: '0ms',
             fontFamily: 'var(--font-display)',
-            fontSize: 'var(--text-hero)',
+            fontSize: 'clamp(2.25rem, 6vw, 4.5rem)',
             fontWeight: 900,
             color: 'var(--color-text-primary)',
-            lineHeight: 1.02,
+            lineHeight: 1.05,
             letterSpacing: '-0.03em',
             marginBottom: 'var(--space-4)',
           }}
@@ -217,7 +184,6 @@ export default function Hero() {
           ))}
         </div>
       </div>
-
     </section>
   )
 }
