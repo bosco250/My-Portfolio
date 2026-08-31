@@ -133,16 +133,6 @@ export default function Navbar() {
             </div>
 
             <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginLeft: 'auto' }}>
-              {personal.isAvailable && (
-                <span className="navbar-pill navbar-hide-md" title={personal.availabilityText}>
-                  <span
-                    className="animate-pulse-dot"
-                    style={{ width: '6px', height: '6px', background: '#FFFFFF', display: 'inline-block', flexShrink: 0 }}
-                  />
-                  Open to work
-                </span>
-              )}
-
               <a href="#contact" className="navbar-cta">Hire me</a>
             </div>
 
