@@ -1,30 +1,25 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
-  <!-- Background -->
-  <rect width="48" height="48" rx="10" fill="#FAFAF8"/>
-  <rect x="0.5" y="0.5" width="47" height="47" rx="9.5" fill="none" stroke="#E2E2DA"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&amp;display=swap');
+      .nav-bg { fill: #007A5C; }
+      .logo-pill-border { stroke: #FFFFFF; stroke-width: 2.5; fill: none; }
+      .logo-pill-text {
+        font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+        font-weight: 900;
+        font-size: 21px;
+        fill: #FFFFFF;
+        letter-spacing: 0.5px;
+      }
+    </style>
+  </defs>
 
-  <!-- J -->
-  <text
-    x="7"
-    y="35"
-    font-family="Georgia, serif"
-    font-weight="900"
-    font-size="28"
-    fill="#14161C"
-    letter-spacing="-1"
-  >J</text>
+  <!-- Green Floating Navbar Background Token (#007A5C) -->
+  <rect class="nav-bg" width="64" height="64" rx="14" />
 
-  <!-- B -->
-  <text
-    x="24"
-    y="35"
-    font-family="Georgia, serif"
-    font-weight="900"
-    font-size="28"
-    fill="#007A5C"
-    letter-spacing="-1"
-  >B</text>
+  <!-- Outlined Pill Container matching .logo-pill in Navbar -->
+  <rect class="logo-pill-border" x="9" y="15" width="46" height="34" rx="17" />
 
-  <!-- Accent dot -->
-  <circle cx="42" cy="38" r="3" fill="#007A5C"/>
+  <!-- Monogram JB matching personal.initials in Navbar -->
+  <text class="logo-pill-text" x="32" y="39" text-anchor="middle">JB</text>
 </svg>

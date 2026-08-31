@@ -1,0 +1,17 @@
+{
+  "name": "Jean Bosco Dusengimana | Full-Stack Software Developer",
+  "short_name": "Jean Bosco",
+  "description": "Full-Stack Software Developer from Kigali, Rwanda shipping production web, mobile, and cloud platforms.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF8",
+  "theme_color": "#007A5C",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

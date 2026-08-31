@@ -325,7 +325,7 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
-/* Logo as an outlined ellipse, mirroring MTN's oval wordmark */
+/* Logo as an outlined pill, mirroring the JB header wordmark */
 .logo-pill {
   display: inline-flex;
   align-items: center;
@@ -334,7 +334,7 @@ body {
   height: 34px;
   padding: 0 15px;
   border: 2px solid #FFFFFF;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   font-family: var(--font-display);
   font-weight: 900;
   font-size: 0.85rem;
@@ -347,6 +347,10 @@ body {
 .logo-pill:hover {
   background: #FFFFFF;
   color: var(--color-accent);
+}
+.logo-pill:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 3px;
 }
 
 .navbar-link {

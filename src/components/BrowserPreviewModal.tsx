@@ -56,7 +56,11 @@ export default function BrowserPreviewModal({ url, title, staticScreenshot, onCl
   }, [onClose])
 
   // Reset image state when view or refresh changes
-  useEffect(() => { setImgState('loading') }, [view, refreshKey])
+  const [prevViewState, setPrevViewState] = useState({ view, refreshKey })
+  if (prevViewState.view !== view || prevViewState.refreshKey !== refreshKey) {
+    setPrevViewState({ view, refreshKey })
+    setImgState('loading')
+  }
 
   const isMobile = view === 'mobile'
 

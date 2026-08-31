@@ -9,12 +9,12 @@ export default function Hero() {
   const mouse      = useMousePosition()
 
   const getParallax = (strength: number) => {
-    const el = sectionRef.current
-    if (!el) return { x: 0, y: 0 }
-    const rect = el.getBoundingClientRect()
+    if (typeof window === 'undefined') return { x: 0, y: 0 }
+    const w = window.innerWidth || 1000
+    const h = window.innerHeight || 800
     return {
-      x: ((mouse.x - (rect.left + rect.width  / 2)) / rect.width)  * strength,
-      y: ((mouse.y - (rect.top  + rect.height / 2)) / rect.height) * strength,
+      x: ((mouse.x - w / 2) / w) * strength,
+      y: ((mouse.y - h / 2) / h) * strength,
     }
   }
 
