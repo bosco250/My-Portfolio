@@ -130,5 +130,5 @@ Full-Stack Software Developer · Kigali, Rwanda (UTC+2)
 
 - Email: [dusengimana06@gmail.com](mailto:dusengimana06@gmail.com)
 - GitHub: [github.com/bosco250](https://github.com/bosco250)
-- LinkedIn: [linkedin.com/in/jean-bosco-dusengimana](https://linkedin.com/in/jean-bosco-dusengimana)
+- LinkedIn: [linkedin.com/in/jean-bosco-dusengimana-b67b6a401](https://www.linkedin.com/in/jean-bosco-dusengimana-b67b6a401)
 - Phone: +250 786 946 188
