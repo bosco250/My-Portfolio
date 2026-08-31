@@ -165,6 +165,26 @@ export default function CaseStudyModal({
           </section>
 
           <section>
+            <div className="case-block-title">Engineering Architecture</div>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.73rem',
+                background: 'var(--color-bg-overlay)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                padding: '12px 14px',
+                color: 'var(--color-text-secondary)',
+                lineHeight: 1.6,
+                overflowX: 'auto',
+              }}
+            >
+              <span style={{ color: 'var(--color-accent)', fontWeight: 600 }}>Architecture Flow: </span>
+              <span>Client Interface ──► API Gateway / NestJS ──► Auth &amp; Validation ──► PostgreSQL / Redis / Cloud Storage</span>
+            </div>
+          </section>
+
+          <section>
             <div className="case-block-title">Built with</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {project.tech.map((t) => (

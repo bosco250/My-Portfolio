@@ -33,11 +33,18 @@ export default function App() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Terminal easter egg
+  // Terminal easter egg (supports Cmd+K / Ctrl+K and typing "bosco")
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setTerminalOpen((prev) => !prev)
+        return
+      }
+
       const next = (keyBuffer + e.key).slice(-SECRET.length)
       setKeyBuffer(next)
       if (next === SECRET) {

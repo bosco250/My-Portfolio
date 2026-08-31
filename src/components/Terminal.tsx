@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { X } from 'lucide-react'
-import { personal, skills } from '../data/portfolio'
+import { personal, skills, projects, achievement } from '../data/portfolio'
 
 interface Line {
   type: 'prompt' | 'output' | 'error'
@@ -10,46 +10,44 @@ interface Line {
 const COMMANDS: Record<string, () => string[]> = {
   help: () => [
     'Available commands:',
-    '  help       show this list',
+    '  help       show this command list',
     '  whoami     about Jean Bosco',
-    '  skills     technical skills',
-    '  projects   list projects',
-    '  contact    contact info',
-    '  joke       developer humor',
-    '  clear      clear terminal',
-    '  exit       close terminal',
+    '  skills     technical skill categories',
+    '  projects   list production platforms',
+    '  contact    contact & profile links',
+    '  quote      engineering quote & humor',
+    '  clear      clear terminal output',
+    '  exit       close terminal modal',
   ],
   whoami: () => [
-    'Jean Bosco Dusengimana',
-    'Full-Stack Software Developer · Kigali, Rwanda',
+    `${personal.name}`,
+    `${personal.role} · ${personal.location} (UTC+2)`,
     '',
-    'I build production systems: multi-platform SaaS, enterprise procurement',
-    'tools, and client-facing web apps. Currently at Uruti Hub Limited.',
+    `${personal.heroTagline}`,
+    `Current Role: ${personal.currentRole}`,
+    `Education:    ${personal.education}`,
     '',
-    `Status: ${personal.isAvailable ? '✅ Open to opportunities' : '🔴 Currently booked'}`,
-    `GitHub:   ${personal.github}`,
-    `Email:    ${personal.email}`,
+    `Status:       ${personal.isAvailable ? '✅ Open to opportunities' : '🔴 Currently booked'}`,
+    `GitHub:       ${personal.github}`,
+    `LinkedIn:     ${personal.linkedin}`,
+    `Email:        ${personal.email}`,
     '',
-    'Fun fact: I won a national hackathon by building a working product in 48h.',
+    `Achievement:  ${achievement.title}`,
   ],
   skills: () => [
-    'Technical skills:',
+    'Technical Skills & Architecture:',
     ...skills.flatMap((g) => [`  ${g.category}:`, `    ${g.items.join(', ')}`]),
   ],
   projects: () => [
-    'Production projects:',
+    'Production Projects & Platforms:',
     '',
-    '  → Uruti Saluni [in-progress]',
-    '     NestJS · Next.js · React Native · PostgreSQL · Airtel API',
-    '     Multi-platform salon management: POS, micro-lending, mobile money',
-    '',
-    '  → IntelliProcure [in-progress]',
-    '     Next.js 14 · NestJS · Prisma · PostgreSQL · Docker',
-    '     Multi-tenant procurement SaaS with AI vendor matching & RBAC',
-    '',
-    '  → Break Through International [live → hyppopeace.com]',
-    '     React · Vite · Docker · Nginx',
-    '     Marketing site + admin CMS for a global coaching firm',
+    ...projects.flatMap((p) => [
+      `  → ${p.title} [${p.status}]`,
+      `     Category: ${p.category}`,
+      `     Tech:     ${p.tech.join(' · ')}`,
+      `     Summary:  ${p.tagline}`,
+      '',
+    ]),
   ],
   contact: () => [
     `Email:    ${personal.email}`,
@@ -57,22 +55,22 @@ const COMMANDS: Record<string, () => string[]> = {
     `GitHub:   ${personal.github}`,
     `LinkedIn: ${personal.linkedin}`,
     '',
-    'Based in Kigali (UTC+2). Available for remote work.',
+    `Location: ${personal.location} (${personal.timezone})`,
     'Response time: within 24h on weekdays.',
   ],
-  joke: () => [
-    'Why do programmers prefer dark mode?',
-    '...',
-    'Because light attracts bugs. 🐛',
+  quote: () => [
+    '"Simplicity is prerequisite for reliability." — Edsger W. Dijkstra',
     '',
-    '(Also, I genuinely cannot work in light mode. It\'s a medical condition.)',
+    'Developer Humor:',
+    'Why do programmers prefer dark mode?',
+    'Because light attracts bugs. 🐛',
   ],
 }
 
 export default function Terminal({ onClose }: { onClose: () => void }) {
   const [lines, setLines] = useState<Line[]>([
-    { type: 'output', content: 'Jean Bosco\'s portfolio terminal v1.0.0' },
-    { type: 'output', content: 'Type "help" to see available commands.' },
+    { type: 'output', content: 'Jean Bosco\'s Interactive Developer Terminal v1.1.0' },
+    { type: 'output', content: 'Type "help" to list available commands.' },
     { type: 'output', content: '' },
   ])
   const [input, setInput] = useState('')
@@ -110,11 +108,13 @@ export default function Terminal({ onClose }: { onClose: () => void }) {
       return
     }
 
-    const handler = COMMANDS[trimmed]
+    // Map 'joke' to 'quote' for backwards compatibility
+    const targetCmd = trimmed === 'joke' ? 'quote' : trimmed
+    const handler = COMMANDS[targetCmd]
     if (handler) {
       handler().forEach((line) => newLines.push({ type: 'output', content: line }))
     } else {
-      newLines.push({ type: 'error', content: `command not found: ${trimmed}. Try "help".` })
+      newLines.push({ type: 'error', content: `command not found: ${trimmed}. Type "help" for available commands.` })
     }
 
     newLines.push({ type: 'output', content: '' })

@@ -161,6 +161,10 @@ export default function Footer() {
           }}
         >
           <span>© {year} {personal.name}</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <kbd style={{ padding: '2px 6px', background: 'var(--color-bg-overlay)', border: '1px solid var(--color-border)', borderRadius: '4px', fontSize: '0.65rem' }}>⌘K</kbd>
+            Dev Terminal
+          </span>
           <span>Designed &amp; built in Kigali</span>
         </div>
       </div>

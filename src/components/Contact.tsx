@@ -28,9 +28,16 @@ export default function Contact() {
   const { ref, visible } = useReveal()
   const [formState, setFormState] = useState<FormState>('idle')
   const [errorMsg,  setErrorMsg]  = useState('')
+  const [copied,    setCopied]    = useState(false)
   const [form, setForm] = useState({
     names: '', email: '', subject: 'Job Offer', message: '', honeypot: '',
   })
+
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText(personal.email)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -103,7 +110,31 @@ export default function Contact() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: 'var(--space-5)' }}>
             {[
-              { icon: <Mail size={15} />, content: <a href={`mailto:${personal.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>{personal.email}</a> },
+              {
+                icon: <Mail size={15} />,
+                content: (
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    title="Click to copy email address"
+                    style={{
+                      background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit',
+                      cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px',
+                    }}
+                  >
+                    <span>{personal.email}</span>
+                    <span style={{
+                      fontSize: '0.65rem', fontFamily: 'var(--font-mono)',
+                      color: copied ? '#FFFFFF' : 'var(--color-accent)',
+                      background: copied ? 'var(--color-accent)' : 'var(--color-accent-muted)',
+                      padding: '1px 7px', borderRadius: 'var(--radius-sm)',
+                      transition: 'all 0.2s ease',
+                    }}>
+                      {copied ? 'Copied!' : 'Copy'}
+                    </span>
+                  </button>
+                ),
+              },
               { icon: <Clock size={15} />, content: 'Responds within 24 hours on weekdays' },
               { icon: <MapPin size={15} />, content: 'Kigali, Rwanda (UTC+2)' },
             ].map(({ icon, content }, i) => (
