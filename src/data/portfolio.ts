@@ -53,6 +53,35 @@ export const achievement = {
 
 export const projects = [
   {
+    id: 'urutimall',
+    title: 'UrutiMall / UrutiShop',
+    shortTitle: 'UrutiMall',
+    tagline: 'B2B marketplace featuring WebAuthn biometric login, RFQ approval workflows, and multi-currency wallets.',
+    category: 'B2B E-Commerce',
+    status: 'live' as const,
+    liveUrl: 'https://urutimall.com',
+    githubUrl: '',
+    screenshot: 'https://api.microlink.io/?url=https%3A%2F%2Furutimall.com&screenshot=true&meta=false&embed=screenshot.url',
+    tech: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS v4', 'Prisma', 'Stripe API'],
+    problem: 'B2B commerce requires multi-step RFQ approvals, multi-currency settlement, and account security stronger than traditional passwords.',
+    solution: 'Developed a Next.js 16 B2B platform with passwordless Passkeys/WebAuthn authentication, corporate RFQ workflows, multi-currency wallets, and automated Stripe settlement.',
+    challenges: [
+      {
+        problem: 'High-security authentication for corporate accounts',
+        solution: 'Implemented WebAuthn biometric login alongside TOTP 2FA, eliminating phishing risks for high-value buyer accounts.',
+      },
+      {
+        problem: 'Streamlining complex B2B purchasing',
+        solution: 'Integrated custom quote request approvals, multi-currency wallet balances, and automated PDF invoicing directly into the purchasing pipeline.',
+      },
+    ],
+    metrics: [
+      { label: 'Auth', value: 'Passkeys' },
+      { label: 'Wallets', value: 'Multi-currency' },
+      { label: 'Payments', value: 'Stripe' },
+    ],
+  },
+  {
     id: 'zahabucore',
     title: 'ZahabuCore',
     shortTitle: 'ZahabuCore',
@@ -137,35 +166,6 @@ export const projects = [
       { label: 'Accounting conventions', value: '4' },
       { label: 'Depreciation methods', value: '3' },
       { label: 'Standard', value: 'IAS 36' },
-    ],
-  },
-  {
-    id: 'urutimall',
-    title: 'UrutiMall / UrutiShop',
-    shortTitle: 'UrutiMall',
-    tagline: 'B2B marketplace featuring WebAuthn biometric login, RFQ approval workflows, and multi-currency wallets.',
-    category: 'B2B E-Commerce',
-    status: 'live' as const,
-    liveUrl: 'https://urutimall.com',
-    githubUrl: '',
-    screenshot: 'https://api.microlink.io/?url=https%3A%2F%2Furutimall.com&screenshot=true&meta=false&embed=screenshot.url',
-    tech: ['Next.js 16', 'React 19', 'TypeScript', 'Tailwind CSS v4', 'Prisma', 'Stripe API'],
-    problem: 'B2B commerce requires multi-step RFQ approvals, multi-currency settlement, and account security stronger than traditional passwords.',
-    solution: 'Developed a Next.js 16 B2B platform with passwordless Passkeys/WebAuthn authentication, corporate RFQ workflows, multi-currency wallets, and automated Stripe settlement.',
-    challenges: [
-      {
-        problem: 'High-security authentication for corporate accounts',
-        solution: 'Implemented WebAuthn biometric login alongside TOTP 2FA, eliminating phishing risks for high-value buyer accounts.',
-      },
-      {
-        problem: 'Streamlining complex B2B purchasing',
-        solution: 'Integrated custom quote request approvals, multi-currency wallet balances, and automated PDF invoicing directly into the purchasing pipeline.',
-      },
-    ],
-    metrics: [
-      { label: 'Auth', value: 'Passkeys' },
-      { label: 'Wallets', value: 'Multi-currency' },
-      { label: 'Payments', value: 'Stripe' },
     ],
   },
   {
