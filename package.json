@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "node api.js && vite",
+    "build": "node api.js && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "cv:check": "esbuild scripts/check-cv.mjs --bundle --platform=node --format=esm --outfile=tmp/check-cv.built.mjs --external:@react-pdf/renderer --external:react --loader:.tsx=tsx --jsx=automatic && node tmp/check-cv.built.mjs && node scripts/extract-cv-text.mjs"

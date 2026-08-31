@@ -34,6 +34,10 @@ export default function Hero() {
         position: 'relative',
         overflow: 'hidden',
         background: 'var(--color-bg-base)',
+        /* Fill the full visible screen — svh is the mobile-safe unit */
+        minHeight: '100svh',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       {/* Soft ambient blobs — no grid, no hard gradients */}
@@ -66,7 +70,7 @@ export default function Hero() {
         />
       </div>
 
-      {/* Content — padding-top ensures clearance below fixed header on all screens */}
+      {/* Content — flex-grow + auto margin centres content in the full-screen hero */}
       <div
         className="hero-content-inner"
         style={{
@@ -76,6 +80,10 @@ export default function Hero() {
           width: '100%',
           padding: 'clamp(9rem, 18vw, 10.5rem) var(--gutter) clamp(3rem, 6vw, 4rem)',
           boxSizing: 'border-box',
+          flexGrow: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
         }}
       >
         {/* Name */}
