@@ -77,14 +77,14 @@
 
   --container: 1200px;
 
-  /* Fluid layout rhythm: shrinks on small screens instead of holding desktop values */
+  /* Fluid layout rhythm: compact, high-density responsiveness across all viewports */
   --gutter:     clamp(1rem, 4vw, 1.5rem);
-  --section-y:  clamp(2.5rem, 5.5vw, 4rem);
-  --head-gap:   clamp(1.5rem, 3.5vw, 2.25rem);
-  --card-gap:   clamp(0.75rem, 2vw, 1.25rem);
-  --split-gap:  clamp(1.75rem, 4vw, 2.75rem);
-  --card-pad:    clamp(1rem, 2.5vw, 1.5rem);
-  --card-pad-lg: clamp(1.25rem, 3vw, 1.75rem);
+  --section-y:  clamp(2rem, 4.5vw, 3.25rem);
+  --head-gap:   clamp(1.25rem, 3vw, 1.875rem);
+  --card-gap:   clamp(0.75rem, 2vw, 1.125rem);
+  --split-gap:  clamp(1.5rem, 3.5vw, 2.25rem);
+  --card-pad:    clamp(0.875rem, 2.2vw, 1.25rem);
+  --card-pad-lg: clamp(1.125rem, 2.5vw, 1.5rem);
 
   --ease-out-expo:   cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring:     cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -753,13 +753,13 @@ body {
 /* Tech badge */
 .tech-badge {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  padding: 3px 9px;
+  font-size: 0.68rem;
+  padding: 2px 8px;
   background: var(--color-bg-overlay);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-accent);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   white-space: nowrap;
   transition: border-color 0.2s, background 0.2s, transform 0.15s;
   cursor: default;
@@ -955,7 +955,7 @@ body {
   background: var(--color-bg-overlay);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: 12px 16px;
+  padding: 10px 14px;
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: var(--text-sm);
@@ -1059,7 +1059,7 @@ body {
   font-size: var(--text-lg);
   font-weight: 700;
   line-height: 1.25;
-  min-height: 2.5em;
+  min-height: 2.2em;
   letter-spacing: -0.01em;
   color: var(--color-text-primary);
 }
@@ -1089,13 +1089,12 @@ body {
   color: var(--color-text-muted);
 }
 
-/* Three lines reserved, so the row of tech chips always starts at the same
-   height across every card. */
+/* Streamlined tagline with compact vertical measure */
 .pcard-tagline {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   font-size: var(--text-sm);
-  line-height: 1.6;
-  min-height: 4.8em;
+  line-height: 1.55;
+  min-height: 3.6em;
   color: var(--color-text-secondary);
 }
 

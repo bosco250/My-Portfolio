@@ -107,7 +107,7 @@ export default function Hero() {
           position: 'relative',
           maxWidth: 'var(--container)',
           margin: '0 auto',
-          padding: 'clamp(6.5rem, 11vw, 7.75rem) var(--gutter) clamp(2.5rem, 6vw, 3.5rem)',
+          padding: 'clamp(5.5rem, 9.5vw, 7rem) var(--gutter) clamp(2rem, 4.5vw, 3rem)',
           width: '100%',
         }}
       >
