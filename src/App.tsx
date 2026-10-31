@@ -1,103 +1,79 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Highlights from './components/Highlights'
-import Capabilities from './components/Capabilities'
-import Projects from './components/Projects'
-import About from './components/About'
-import Skills from './components/Skills'
-import Experience from './components/Experience'
-import CtaBand from './components/CtaBand'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import Terminal from './components/Terminal'
+import { useEffect, useMemo, useState } from 'react'
+import Box from '@mui/material/Box'
+import { ContactContext } from './app/contactContext'
+import { findProject } from './lib/records'
+import { scrollToSection, useCaseStudyId } from './lib/router'
+import type { Message } from './lib/sendMessage'
+import NavBar from './sections/NavBar'
+import Hero from './sections/Hero'
+import Work from './sections/work/Work'
+import CaseStudy from './sections/work/CaseStudy'
+import Experience from './sections/Experience'
+import Skills from './sections/Skills'
+import About from './sections/About'
+import Contact from './sections/contact/Contact'
+import Footer from './sections/Footer'
+import { focusRing, gold, navy } from './theme/tokens'
 
-const SECRET = 'bosco'
+const baseTitle = 'Dusengimana Jean Bosco | Full-Stack Software Developer'
 
 export default function App() {
-  const [terminalOpen, setTerminalOpen] = useState(false)
-  const [keyBuffer, setKeyBuffer] = useState('')
-  const progressRef = useRef<HTMLDivElement>(null)
+  const [contact, setContact] = useState<{ key: number; prefill: Partial<Message> | null }>({ key: 0, prefill: null })
+  const caseId = useCaseStudyId()
 
-  // Scroll progress bar
-  useEffect(() => {
-    const onScroll = () => {
-      const el = progressRef.current
-      if (!el) return
-      const scrolled = window.scrollY
-      const total = document.documentElement.scrollHeight - window.innerHeight
-      const pct = total > 0 ? (scrolled / total) * 100 : 0
-      el.style.width = `${pct}%`
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  // Terminal easter egg (supports Cmd+K / Ctrl+K and typing "bosco")
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement).tagName
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(tag)) return
-
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        setTerminalOpen((prev) => !prev)
-        return
-      }
-
-      const next = (keyBuffer + e.key).slice(-SECRET.length)
-      setKeyBuffer(next)
-      if (next === SECRET) {
-        setTerminalOpen(true)
-        setKeyBuffer('')
-      }
-    },
-    [keyBuffer]
+  const actions = useMemo(
+    () => ({
+      compose: (prefill?: Partial<Message>) => {
+        setContact((c) => ({ key: c.key + 1, prefill: prefill ?? null }))
+        // Wait for the case study panel to slide away first.
+        setTimeout(() => scrollToSection('contact'), 260)
+      },
+    }),
+    [],
   )
 
+  // Tab title follows the open case study.
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    const p = findProject(caseId)
+    document.title = p ? `${p.title} case study · Jean Bosco` : baseTitle
+  }, [caseId])
 
   return (
-    <>
-      {/* Scroll progress */}
-      <div ref={progressRef} id="scroll-progress" style={{ width: '0%' }} />
+    <ContactContext.Provider value={actions}>
+      <Box
+        component="a"
+        href="#main"
+        sx={{
+          position: 'fixed',
+          top: 8,
+          left: 8,
+          zIndex: 2000,
+          px: 4,
+          py: 2.5,
+          borderRadius: 1,
+          backgroundColor: gold.active,
+          color: navy.primary,
+          fontWeight: 600,
+          textDecoration: 'none',
+          transform: 'translateY(-200%)',
+          '&:focus': { transform: 'none', ...focusRing.light },
+        }}
+      >
+        Skip to content
+      </Box>
 
-      <Navbar />
-      <main id="main-content">
+      <NavBar />
+      <Box component="main" id="main" tabIndex={-1} sx={{ outline: 'none' }}>
         <Hero />
-        <Highlights />
-        <Capabilities />
-        <Projects />
         <About />
         <Skills />
         <Experience />
-        <CtaBand />
-        <Contact />
-      </main>
+        <Work />
+        <Contact prefill={contact.prefill} formKey={contact.key} />
+      </Box>
       <Footer />
 
-      {terminalOpen && <Terminal onClose={() => setTerminalOpen(false)} />}
-
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '1.25rem',
-          right: '1.25rem',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '0.6rem',
-          color: 'var(--color-text-muted)',
-          opacity: 0.35,
-          userSelect: 'none',
-          pointerEvents: 'none',
-          letterSpacing: '0.05em',
-        }}
-        aria-hidden="true"
-      >
-        try typing "bosco"
-      </div>
-    </>
+      <CaseStudy />
+    </ContactContext.Provider>
   )
 }

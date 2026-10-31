@@ -4,8 +4,8 @@
   "description": "Full-Stack Software Developer from Kigali, Rwanda shipping production web, mobile, and cloud platforms.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FAFAF8",
-  "theme_color": "#007A5C",
+  "background_color": "#F3F5F9",
+  "theme_color": "#012D6E",
   "icons": [
     {
       "src": "/favicon.svg",
