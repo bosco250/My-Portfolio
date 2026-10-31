@@ -9,7 +9,7 @@ export default function TechPill({ label, tone = 'navy' }: { label: string; tone
       sx={{
         px: 2.5,
         py: 0.75,
-        borderRadius: 999,
+        borderRadius: '6px',
         fontFamily: font.mono,
         fontSize: '0.75rem',
         lineHeight: 1.6,

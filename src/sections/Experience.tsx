@@ -137,7 +137,7 @@ function TimelineItem({ role: r, side, delay }: { role: Role; side: 'left' | 'ri
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 2, justifyContent: { md: left ? 'flex-end' : 'flex-start' } }}>
             <Typography sx={{ fontFamily: font.mono, fontSize: '0.8125rem', color: gold.text, fontWeight: 500 }}>{r.period}</Typography>
             {current && (
-              <Box component="span" sx={{ px: 2, py: 0.25, borderRadius: 999, fontSize: '0.75rem', fontWeight: 600, color: status.success.text, backgroundColor: status.success.wash }}>
+              <Box component="span" sx={{ px: 2, py: 0.25, borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, color: status.success.text, backgroundColor: status.success.wash }}>
                 Current
               </Box>
             )}

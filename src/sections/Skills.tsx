@@ -59,6 +59,9 @@ export default function Skills() {
                   overflow: 'hidden',
                   transition: `transform ${motion.base}ms, box-shadow ${motion.base}ms, border-color ${motion.base}ms`,
                   '&:hover': { transform: 'translateY(-3px)', boxShadow: shadow.dialog, borderColor: navy.soft },
+                  // Short gold rule on the top edge, drawn by hand; it grows on hover.
+                  '&::before': { content: '""', position: 'absolute', top: 0, left: 20, width: 28, height: 3, borderRadius: '0 0 2px 2px', backgroundColor: gold.active, transition: 'width 250ms' },
+                  '&:hover::before': { width: 64 },
                   // Tool count in the corner.
                   '&::after': {
                     content: `"${String(g.items.length).padStart(2, '0')}"`,

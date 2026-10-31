@@ -59,7 +59,7 @@ export default function Contact({ prefill, formKey }: { prefill: Partial<Message
           position: 'relative',
           isolation: 'isolate',
           overflow: 'hidden',
-          borderRadius: { xs: '20px', md: '28px' },
+          borderRadius: { xs: '12px', md: '16px' },
           backgroundColor: navy.primary,
           color: neutral.sidebarText,
           px: { xs: 5, sm: 8, md: 12 },
@@ -135,7 +135,7 @@ export default function Contact({ prefill, formKey }: { prefill: Partial<Message
         </Reveal>
 
         <Reveal delay={80}>
-          <Card sx={{ p: { xs: 5, sm: 8 }, border: 0, borderRadius: '20px', boxShadow: shadow.dialog, '& :focus-visible': focusRing.light }}>
+          <Card sx={{ p: { xs: 5, sm: 8 }, border: 0, borderRadius: '10px', boxShadow: shadow.dialog, '& :focus-visible': focusRing.light }}>
             <ContactForm key={formKey} prefill={prefill} />
           </Card>
         </Reveal>

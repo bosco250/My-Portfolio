@@ -21,7 +21,7 @@ const overlayPill = {
   gap: 1.5,
   height: 26,
   px: 2.5,
-  borderRadius: 999,
+  borderRadius: 6,
   fontFamily: font.mono,
   fontSize: '0.6875rem',
   color: neutral.white,
@@ -75,7 +75,7 @@ function Visual({ project: p, index }: { project: Project; index: number }) {
           }}
         >
           <Box>
-            <Box aria-hidden sx={{ width: 44, height: 44, mx: 'auto', borderRadius: '12px', display: 'grid', placeItems: 'center', color: gold.onNavy, backgroundColor: navy.raised, border: `1px solid ${navy.line}` }}>
+            <Box aria-hidden sx={{ width: 44, height: 44, mx: 'auto', borderRadius: '8px', display: 'grid', placeItems: 'center', color: gold.onNavy, backgroundColor: navy.raised, border: `1px solid ${navy.line}` }}>
               <LockOutlined sx={{ fontSize: 20 }} />
             </Box>
             <Typography aria-hidden sx={{ mt: 3, fontSize: '1.375rem', fontWeight: 800, letterSpacing: '-0.02em', color: neutral.white }}>
@@ -158,7 +158,7 @@ export default function ProjectCard({ project: p, index }: { project: Project; i
                 color: 'inherit',
                 fontWeight: 'inherit',
                 '&:focus-visible': { outline: 'none' },
-                '&::after': { content: '""', position: 'absolute', inset: 0, zIndex: 1, borderRadius: '20px' },
+                '&::after': { content: '""', position: 'absolute', inset: 0, zIndex: 1, borderRadius: '10px' },
                 '&:focus-visible::after': focusRing.light,
               }}
             >
@@ -168,7 +168,7 @@ export default function ProjectCard({ project: p, index }: { project: Project; i
           <NorthEast aria-hidden className="open-icon" sx={{ fontSize: 18, mt: 0.5, color: neutral.inkMuted, transition: `transform ${motion.base}ms, color ${motion.base}ms` }} />
         </Box>
         <Box sx={{ mt: 2 }}>
-          <Box component="span" sx={{ display: 'inline-block', px: 2.5, py: 0.5, borderRadius: 999, fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: navy.primary, backgroundColor: navy.tint }}>
+          <Box component="span" sx={{ display: 'inline-block', px: 2.5, py: 0.5, borderRadius: '4px', fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: navy.primary, backgroundColor: navy.tint }}>
             {p.category}
           </Box>
         </Box>
@@ -181,7 +181,7 @@ export default function ProjectCard({ project: p, index }: { project: Project; i
 
         <Box component="dl" sx={{ m: 0, mt: 4, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 2 }}>
           {p.metrics.slice(0, 2).map((m) => (
-            <Box key={m.label} sx={{ display: 'flex', flexDirection: 'column', px: 3, py: 2, borderRadius: '12px', backgroundColor: navy.tint, border: `1px solid ${navy.soft}`, minWidth: 0 }}>
+            <Box key={m.label} sx={{ display: 'flex', flexDirection: 'column', px: 3, py: 2, borderRadius: '6px', backgroundColor: navy.tint, border: `1px solid ${navy.soft}`, minWidth: 0 }}>
               <Typography component="dt" sx={{ order: 2, fontSize: '0.75rem', lineHeight: 1.35, color: neutral.inkMuted }}>
                 {m.label}
               </Typography>

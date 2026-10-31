@@ -119,7 +119,7 @@ export const theme = createTheme({
         root: ({ theme }) => ({
           minHeight: 42,
           padding: '9px 20px',
-          borderRadius: 999,
+          borderRadius: 10,
           border: 0,
           transition: `background-color ${motion.fast}ms, color ${motion.fast}ms`,
           '&:focus-visible': focusRing.light,
@@ -189,7 +189,7 @@ export const theme = createTheme({
 
     MuiPaper: {
       defaultProps: { elevation: 0 },
-      styleOverrides: { root: { backgroundImage: 'none', borderRadius: 16 } },
+      styleOverrides: { root: { backgroundImage: 'none', borderRadius: 10 } },
     },
 
     MuiCard: {
@@ -198,7 +198,7 @@ export const theme = createTheme({
         root: {
           border: `1px solid ${neutral.border}`,
           boxShadow: shadow.card,
-          borderRadius: 20,
+          borderRadius: 10,
         },
       },
     },
@@ -217,7 +217,7 @@ export const theme = createTheme({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 999,
+          borderRadius: 6,
           height: 26,
           fontSize: px(13),
           fontWeight: 500,
@@ -252,7 +252,7 @@ export const theme = createTheme({
       styleOverrides: { paper: { borderRadius: 0, border: 0 } },
     },
     MuiDialog: {
-      styleOverrides: { paper: { borderRadius: 16, boxShadow: shadow.dialog } },
+      styleOverrides: { paper: { borderRadius: 12, boxShadow: shadow.dialog } },
     },
     MuiDialogTitle: {
       defaultProps: { variant: 'h2' },
