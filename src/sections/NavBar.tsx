@@ -16,7 +16,7 @@ import { personal } from '../data/portfolio'
 import { scrollToSection, sectionIds, type SectionId } from '../lib/router'
 import { useActiveSection } from '../lib/useActiveSection'
 import { useCvDownload } from '../lib/useCvDownload'
-import { alpha, focusRing, font, gold, motion, navy, neutral } from '../theme/tokens'
+import { alpha, focusRing, gold, motion, navy, neutral } from '../theme/tokens'
 
 const links: { id: SectionId; label: string }[] = [
   { id: 'about', label: 'About' },
@@ -71,13 +71,13 @@ export default function NavBar() {
       >
         {/* Identity */}
         <ButtonBase component="a" href="#top" onClick={go('top')} aria-label={`${personal.name}, back to top`} sx={{ gap: 2.5, borderRadius: 2, mr: 'auto', pr: 1, '&.Mui-focusVisible': focusRing.light }}>
-          <ProductMark size={38} />
+          <ProductMark size={40} />
           <Box sx={{ textAlign: 'left' }}>
-            <Typography sx={{ fontFamily: font.mono, fontSize: { xs: '0.9375rem', md: '1rem' }, fontWeight: 500, lineHeight: 1.2, color: navy.primary, letterSpacing: '-0.01em' }}>
-              <Box component="span" sx={{ color: gold.text }}>{'<'}</Box>
-              jean
-              <Box component="span" sx={{ fontWeight: 700 }}>bosco</Box>
-              <Box component="span" sx={{ color: gold.text }}>{' />'}</Box>
+            <Typography sx={{ fontSize: { xs: '1rem', md: '1.0625rem' }, fontWeight: 700, lineHeight: 1.15, letterSpacing: '-0.02em', color: navy.primary }}>
+              Jean Bosco
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', lineHeight: 1.3, color: neutral.inkMuted, display: { xs: 'none', sm: 'block' } }}>
+              Full-stack developer
             </Typography>
           </Box>
         </ButtonBase>

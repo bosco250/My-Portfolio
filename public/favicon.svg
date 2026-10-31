@@ -1,4 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none">
-  <rect width="32" height="32" fill="#012D6E"/>
-  <path d="M11 9H21M18 9V19A4 4 0 0 1 10 19" stroke="#FFFFFF" stroke-width="3" stroke-linecap="square"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <title>Jean Bosco</title>
+  <rect width="64" height="64" rx="15" fill="#012D6E"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" transform="translate(2 0)">
+    <path d="M24 28V44a7 7 0 0 1-12 5"/>
+    <path d="M33 14V44"/>
+    <path d="M33 37a7.5 7.5 0 1 0 15 0a7.5 7.5 0 1 0-15 0"/>
+  </g>
+  <rect x="21.5" y="15" width="9" height="9" rx="2.2" fill="#BF9F00" transform="rotate(-6 26 19.5)"/>
 </svg>
