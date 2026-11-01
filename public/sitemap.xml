@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://boscodev.vercel.app/</loc>
+    <lastmod>2026-11-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://boscodev.vercel.app/og-image.png</image:loc>
+      <image:title>Dusengimana Jean Bosco, software engineer in Kigali, Rwanda</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://boscodev.vercel.app/work/urutimall.webp</image:loc>
+      <image:title>UrutiMall B2B marketplace, built by Dusengimana Jean Bosco</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://boscodev.vercel.app/work/zahabu.webp</image:loc>
+      <image:title>ZahabuCore insurance platform, built by Dusengimana Jean Bosco</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://boscodev.vercel.app/work/classpoint.webp</image:loc>
+      <image:title>ClassPoint corporate platform, built by Dusengimana Jean Bosco</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://boscodev.vercel.app/work/hyppopeace.webp</image:loc>
+      <image:title>Hyppopeace booking platform, built by Dusengimana Jean Bosco</image:title>
+    </image:image>
+  </url>
+</urlset>

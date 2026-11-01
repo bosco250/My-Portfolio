@@ -5,11 +5,15 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import ArrowForward from '@mui/icons-material/ArrowForward'
 import Reveal from '../components/Reveal'
+import TypedRole from '../components/TypedRole'
 import { CodeTag, Mark, Tagline } from '../components/Section'
 import { personal, projects } from '../data/portfolio'
 import { scrollToSection } from '../lib/router'
 import { blob, dashedRing, dotCluster, heroWave } from '../theme/backdrops'
 import { alpha, gold, navy, neutral } from '../theme/tokens'
+
+// Typed in turn inside the tagline: "As a ___, I design the system..."
+const roles = ['full-stack engineer,', 'systems architect,', 'technical consultant,']
 
 const stats = [
   { value: String(projects.length), label: 'Platforms shipped' },
@@ -77,18 +81,29 @@ export default function Hero() {
                 Hi, I'm <Mark>Jean Bosco</Mark>
               </Typography>
             </Reveal>
-            <Reveal onLoad delay={120}>
-              <Tagline sx={{ mt: 3, fontSize: { xs: '1.875rem', md: '2.5rem' } }}>Building software that businesses run on.</Tagline>
+            <Reveal onLoad delay={140}>
+              <Tagline sx={{ mt: 4, fontSize: { xs: '1.75rem', md: '2.25rem' } }}>
+                {/* Screen readers get the whole sentence once */}
+                <Box component="span" className="visually-hidden">
+                  As a full-stack engineer, systems architect and technical consultant, I design the system, build every layer, and keep it running.
+                </Box>
+                <Box component="span" aria-hidden sx={{ display: 'block' }}>
+                  As a <TypedRole roles={roles} />
+                </Box>
+                <Box component="span" aria-hidden sx={{ display: 'block' }}>
+                  I design the system, build every layer, and keep it running.
+                </Box>
+              </Tagline>
             </Reveal>
-            <Reveal onLoad delay={180}>
-              <Typography variant="body1" sx={{ mt: 5, maxWidth: 520, color: neutral.inkSoft, fontSize: { md: '1.0625rem' } }}>
-                Full-stack developer in {personal.location}. I design and ship web, mobile and cloud platforms for insurance, fintech, e-mobility and commerce teams, from the database to the screen.
+            <Reveal onLoad delay={190}>
+              <Typography variant="body1" sx={{ mt: 4, maxWidth: 540, color: neutral.inkSoft, fontSize: { md: '1.0625rem' } }}>
+                I'm {personal.name}, a software engineer based in {personal.location}, working across the full stack: system architecture, backend and frontend development, database engineering, DevOps and hosting. I also advise teams as a technical consultant, and my work runs in production for companies in insurance, fintech, e-mobility and commerce.
               </Typography>
             </Reveal>
-            <Reveal onLoad delay={240}>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 8 }}>
+            <Reveal onLoad delay={270}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 7 }}>
                 <Button size="large" variant="contained" href="#work" onClick={go('work')} endIcon={<ArrowForward />} sx={{ boxShadow: `0 10px 24px ${alpha(gold.active, 0.35)}` }}>
-                  View projects
+                  See what I've built
                 </Button>
                 <Button
                   size="large"
@@ -97,12 +112,12 @@ export default function Hero() {
                   onClick={go('contact')}
                   sx={{ color: navy.primary, backgroundColor: neutral.white, boxShadow: `inset 0 0 0 1px ${neutral.border}`, '&:hover': { backgroundColor: neutral.white, boxShadow: `inset 0 0 0 1px ${navy.primary}` } }}
                 >
-                  Contact me
+                  Let's talk
                 </Button>
               </Box>
             </Reveal>
-            <Reveal onLoad delay={300}>
-              <Box component="dl" sx={{ m: 0, mt: 10, display: 'flex', flexWrap: 'wrap', columnGap: 10, rowGap: 4 }}>
+            <Reveal onLoad delay={320}>
+              <Box component="dl" sx={{ m: 0, mt: 9, display: 'flex', flexWrap: 'wrap', columnGap: 10, rowGap: 4 }}>
                 {stats.map((s) => (
                   <Box key={s.label} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Typography component="dt" sx={{ order: 2, fontSize: '0.8125rem', color: neutral.inkMuted }}>

@@ -4,8 +4,8 @@ export const personal = {
   initials: 'JB',
   /** Path to a portrait in /public, e.g. '/portrait.jpg'. Leave empty to show initials. */
   photo: '',
-  role: 'Full-Stack Software Developer',
-  roleExtended: 'Full-Stack Software Developer',
+  role: 'Full-Stack Engineer & Systems Architect',
+  roleExtended: 'Full-Stack Engineer · Systems Architect · Technical Consultant',
   location: 'Kigali, Rwanda',
   timezone: 'UTC+2',
   email: 'dusengimana06@gmail.com',

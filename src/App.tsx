@@ -15,7 +15,7 @@ import Contact from './sections/contact/Contact'
 import Footer from './sections/Footer'
 import { focusRing, gold, navy } from './theme/tokens'
 
-const baseTitle = 'Dusengimana Jean Bosco | Full-Stack Software Developer'
+const baseTitle = 'Dusengimana Jean Bosco | Software Engineer in Kigali, Rwanda'
 
 export default function App() {
   const [contact, setContact] = useState<{ key: number; prefill: Partial<Message> | null }>({ key: 0, prefill: null })
@@ -35,7 +35,7 @@ export default function App() {
   // Tab title follows the open case study.
   useEffect(() => {
     const p = findProject(caseId)
-    document.title = p ? `${p.title} case study · Jean Bosco` : baseTitle
+    document.title = p ? `${p.title} case study · Dusengimana Jean Bosco` : baseTitle
   }, [caseId])
 
   return (

@@ -1,0 +1,5 @@
+# Dusengimana Jean Bosco, software engineer in Kigali, Rwanda
+User-agent: *
+Allow: /
+
+Sitemap: https://boscodev.vercel.app/sitemap.xml

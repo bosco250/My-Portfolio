@@ -77,7 +77,7 @@ export default function NavBar() {
               Jean Bosco
             </Typography>
             <Typography sx={{ fontSize: '0.75rem', lineHeight: 1.3, color: neutral.inkMuted, display: { xs: 'none', sm: 'block' } }}>
-              Full-stack developer
+              Full-stack engineer & architect
             </Typography>
           </Box>
         </ButtonBase>
