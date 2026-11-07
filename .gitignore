@@ -6,10 +6,7 @@ dist/
 dist-ssr/
 
 # ── Environment variables (never commit secrets) ──────────────
-.env
-.env.local
 .env.*.local
-.env.production
 
 # ── Logs ──────────────────────────────────────────────────────
 logs/
@@ -25,7 +22,6 @@ Thumbs.db
 desktop.ini
 
 # ── Editor ────────────────────────────────────────────────────
-.vscode/*
 !.vscode/extensions.json
 .idea/
 *.suo
@@ -49,3 +45,4 @@ coverage/
 
 # CV verification scratch output
 tmp/
+config.bat
